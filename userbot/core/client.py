@@ -125,7 +125,7 @@ class JmthonUserBotClient(TelegramClient):
                     await edit_delete(check, "- يجب عليك تفعيل وضع الانلاين اولا ارسل\n`.تفعيل الانلاين`", 10)
                 except ChatSendStickersForbiddenError:
                     await edit_delete(
-                        check, "- ههذه الدردشة لا تسمح بارسال الملصقات هنا"<, 10
+                        check, "- ههذه الدردشة لا تسمح بارسال الملصقات هنا", 10
                     )
                 except BotResponseTimeoutError:
                     await edit_delete(
