@@ -10,10 +10,10 @@ from ..core.logger import logging
 from ..core.managers import edit_delete, edit_or_reply
 from ..core.session import jmthon
 from ..helpers.tools import media_type
-from ..helpers.utils import _cattools, _catutils, _format, install_pip, reply_id
+from ..helpers.utils import _jmthontools, _jmthonutils, _format, install_pip, reply_id
 from .decorators import admin_cmd, sudo_cmd
 
-LOGS = logging.getLogger("جـمثون")
+LOGS = logging.getLogger("jmthon")
 
 
 def load_module(shortname, plugin_path=None):
@@ -26,7 +26,7 @@ def load_module(shortname, plugin_path=None):
         spec = importlib.util.spec_from_file_location(name, path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
-        LOGS.info("⌯︙تم بنجاح تحميل ملف " + shortname)
+        LOGS.info("تم بنجاح تثبيت ملف " + shortname)
     else:
         if plugin_path is None:
             path = Path(f"userbot/plugins/{shortname}.py")
@@ -46,8 +46,8 @@ def load_module(shortname, plugin_path=None):
         mod.CMD_HELP = CMD_HELP
         mod.reply_id = reply_id
         mod.admin_cmd = admin_cmd
-        mod._catutils = _catutils
-        mod._cattools = _cattools
+        mod._jmthonutils = _jmthonutils
+        mod._jmthontools = _jmthontools
         mod.media_type = media_type
         mod.edit_delete = edit_delete
         mod.install_pip = install_pip
@@ -58,7 +58,7 @@ def load_module(shortname, plugin_path=None):
         spec.loader.exec_module(mod)
         # for imports
         sys.modules["userbot.plugins." + shortname] = mod
-        LOGS.info("⌯︙تم بنجاح تحميل ملف " + shortname)
+        LOGS.info("تم بنجاح تثبيت ملف " + shortname)
 
 
 def remove_plugin(shortname):
@@ -100,34 +100,3 @@ def checkplugins(filename):
     filedata = filedata.replace("editmessage", "edit_message")
     with open(filename, "w") as f:
         f.write(filedata)
-
-
-# استدعاء ملفات البوت المساعد
-def start_assistant(shortname):
-    if shortname.startswith("__"):
-        pass
-    elif shortname.endswith("_"):
-        import importlib
-        import sys
-        from pathlib import Path
-
-        path = Path(f"userbot/plugins/assistant/{shortname}.py")
-        name = "userbot.plugins.assistant.{}".format(shortname)
-        spec = importlib.util.spec_from_file_location(name, path)
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-        print("يتم تشغيل البوت المساعد.")
-        print("بنجاح تم استدعاء " + shortname)
-    else:
-        import importlib
-        import sys
-        from pathlib import Path
-
-        path = Path(f"userbot/plugins/assistant/{shortname}.py")
-        name = "userbot.plugins.assistant.{}".format(shortname)
-        spec = importlib.util.spec_from_file_location(name, path)
-        mod = importlib.util.module_from_spec(spec)
-        mod.tgbot = bot.tgbot
-        spec.loader.exec_module(mod)
-        sys.modules["userbot.plugins.assistant" + shortname] = mod
-        print("بنجاح يتم تحميل " + shortname)
