@@ -63,7 +63,7 @@ async def startupmessage():
             Config.JMTHONLOGO = await jmthon.tgbot.send_file(
                 BOTLOG_CHATID,
                 "https://telegra.ph/file/e9cd63140ffaba419db6b.jpg",
-                caption="**- اهلا بك تم تشغيل سورس جمثون بنجاح و بدون اي مشاكل\n لعرض اوامر السورس ارسل `.الاوامر`\**",
+                caption="**- اهلا بك تم تشغيل سورس جمثون بنجاح و بدون اي مشاكل\n لعرض اوامر السورس ارسل `.الاوامر`**",
                 buttons=[(Button.url("مجموعة المساعده", "https://t.me/jmthon_support"),)],
             )
     except Exception as e:
