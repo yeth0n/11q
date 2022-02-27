@@ -1,11 +1,3 @@
-# @Jmthon - < https://t.me/Jmthon >
-# Copyright (C) 2021 - JMTHON-AR
-# All rights reserved.
-#
-# This file is a part of < https://github.com/JMTHON-AR/JMTHON >
-# Please read the GNU Affero General Public License in;
-# < https://github.com/JMTHON-AR/JM-THON/blob/master/LICENSE
-# ===============================================================
 import asyncio
 import os
 import re
@@ -70,7 +62,7 @@ def run_async(func: callable):
     return loop.run_until_complete(func)
 
 
-async def restart_script(client: TelegramClient, jasme):
+async def restart_script(client: TelegramClient, sandy):
     """Restart the current script."""
     try:
         ulist = get_collectionlist_items()
@@ -80,13 +72,13 @@ async def restart_script(client: TelegramClient, jasme):
     except Exception as e:
         LOGS.error(e)
     try:
-        add_to_collectionlist("restart_update", [jasme.chat_id, jasme.id])
+        add_to_collectionlist("restart_update", [sandy.chat_id, sandy.id])
     except Exception as e:
         LOGS.error(e)
     executable = sys.executable.replace(" ", "\\ ")
     args = [executable, "-m", "userbot"]
     os.execle(executable, *args, os.environ)
-    sys.exit(0)
+    os._exit(143)
 
 
 async def get_message_link(client, event):

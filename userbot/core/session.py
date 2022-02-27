@@ -1,18 +1,10 @@
-# @Jmthon - < https://t.me/Jmthon >
-# Copyright (C) 2021 - JMTHON-AR
-# All rights reserved.
-#
-# This file is a part of < https://github.com/JMTHON-AR/JMTHON >
-# Please read the GNU Affero General Public License in;
-# < https://github.com/JMTHON-AR/JM-THON/blob/master/LICENSE
-# ===============================================================
 import sys
 
 from telethon.network.connection.tcpabridged import ConnectionTcpAbridged
 from telethon.sessions import StringSession
 
 from ..Config import Config
-from .client import CatUserBotClient
+from .client import JmthonUserBotClient
 
 __version__ = "2.10.6"
 
@@ -24,7 +16,7 @@ else:
     session = "jmthon"
 
 try:
-    jmthon = CatUserBotClient(
+    jmthon = JmthonUserBotClient(
         session=session,
         api_id=Config.APP_ID,
         api_hash=Config.API_HASH,
@@ -35,12 +27,12 @@ try:
         connection_retries=None,
     )
 except Exception as e:
-    print(f"[STRING SESSION] - {str(e)}")
+    print(f"STRING_SESSION - {e}")
     sys.exit()
 
 
-jmthon.tgbot = tgbot = CatUserBotClient(
-    session="arTgbot",
+jmthon.tgbot = tgbot = JmthonUserBotClient(
+    session="JmthonTgbot",
     api_id=Config.APP_ID,
     api_hash=Config.API_HASH,
     loop=loop,
