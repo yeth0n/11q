@@ -21,7 +21,7 @@ def convert_from_bytes(size):
     return f"{round(size, 2)} {units[n]}"
 
 
-@jmthon.ar_md(
+@jmthon.ar_cmd(
     pattern="الانترنت(?:\s|$)([\s\S]*)",
     command=("الانترنت", plugin_category),
     info={
