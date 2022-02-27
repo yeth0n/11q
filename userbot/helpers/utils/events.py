@@ -46,8 +46,8 @@ async def get_user_from_event(
             if isinstance(user, int) or user.startswith("@"):
                 user_obj = await event.client.get_entity(user)
                 return user_obj, extra
-    except Exception:
-        pass
+    except Exception as e:
+        LOGS.error(str(e))
     try:
         if nogroup is False:
             if secondgroup:
@@ -65,23 +65,23 @@ async def get_user_from_event(
                 return None, None
             user_obj = await event.client.get_entity(previous_message.sender_id)
             return user_obj, extra
-        elif not args:
+        if not args:
             if not noedits:
                 await edit_delete(
-                    catevent, "- يجب وضـع ايدي او معرف او بالـرد على الشخص "
+                    catevent, "`Pass the user's username, id or reply!`", 5
                 )
             return None, None
     except Exception as e:
         LOGS.error(str(e))
     if not noedits:
-        await edit_delete(catevent, "- يجـب الـرد علـى رسالة اولا")
+        await edit_delete(catevent, "__Couldn't fetch user to proceed further.__")
     return None, None
 
 
-async def checking(jmthon):
-    cat_c = base64.b64decode("VHdIUHd6RlpkYkNJR1duTg==")
+async def checking(catub):
+    cat_c = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
     try:
         cat_channel = Get(cat_c)
-        await jmthon(cat_channel)
+        await catub(cat_channel)
     except BaseException:
         pass
