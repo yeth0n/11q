@@ -1,16 +1,13 @@
 import glob
 import os
 import sys
-from asyncio.exceptions import CancelledError
 from datetime import timedelta
 from pathlib import Path
 
-import requests
 from telethon import Button, functions, types, utils
-from telethon.tl.functions.channels import JoinChannelRequest
 
 from userbot import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
-from userbot import jmthon
+from telethon.tl.functions.channels import JoinChannelRequest
 
 from ..Config import Config
 from ..core.logger import logging
@@ -20,11 +17,11 @@ from ..sql_helper.global_collection import (
     del_keyword_collectionlist,
     get_item_collectionlist,
 )
-from ..sql_helper.globals import addgvar, delgvar, gvarstatus
+from ..sql_helper.globals import addgvar, gvarstatus
 from .pluginmanager import load_module
 from .tools import create_supergroup
 
-LOGS = logging.getLogger("JMTHON")
+LOGS = logging.getLogger("jmthon")
 cmdhr = Config.COMMAND_HAND_LER
 
 
@@ -39,8 +36,8 @@ async def setup_bot():
             if option.ip_address == jmthon.session.server_address:
                 if jmthon.session.dc_id != option.id:
                     LOGS.warning(
-                        f"⌯︙معرف ثابت في الجلسة من {jmthon.session.dc_id}"
-                        f"⌯︙لـ  {option.id}"
+                        f"معرف DC ثابت في الجلسة من {jmthon.session.dc_id}"
+                        f" الى {option.id}"
                     )
                 jmthon.session.set_dc(option.id, option.ip_address, option.port)
                 jmthon.session.save()
@@ -53,7 +50,7 @@ async def setup_bot():
         if Config.OWNER_ID == 0:
             Config.OWNER_ID = utils.get_peer_id(jmthon.me)
     except Exception as e:
-        LOGS.error(f"كـود تيرمكس - {str(e)}")
+        LOGS.error(f"STRING_SESSION - {e}")
         sys.exit()
 
 
@@ -63,11 +60,11 @@ async def startupmessage():
     """
     try:
         if BOTLOG:
-            Config.CATUBLOGO = await jmthon.tgbot.send_file(
+            Config.JMTHONLOGO = await jmthon.tgbot.send_file(
                 BOTLOG_CHATID,
                 "https://telegra.ph/file/e9cd63140ffaba419db6b.jpg",
-                caption="⌯︙**بــوت جـمـثـون يـعـمـل بـنـجـاح**  ✅ \n⌯︙**قـنـاة الـسـورس**  :  @JMTHON",
-                buttons=[(Button.url("كروب جـمثون", "https://t.me/GroupJmthon"),)],
+                caption="**- اهلا بك تم تشغيل سورس جمثون بنجاح و بدون اي مشاكل\n لعرض اوامر السورس ارسل `.الاوامر`\**",
+                buttons=[(Button.url("مجموعة المساعده", "https://t.me/jmthon_support"),)],
             )
     except Exception as e:
         LOGS.error(e)
@@ -83,15 +80,12 @@ async def startupmessage():
         if msg_details:
             await jmthon.check_testcases()
             message = await jmthon.get_messages(msg_details[0], ids=msg_details[1])
-            text = (
-                message.text
-                + "\n\n**⌯︙اهلا وسهلا لقد قمت باعاده تشغيل بـوت جـمثون تمت بنجاح**"
-            )
+            text = message.text + "\n\n**الان البوت يعمل بشكل طبيعي.**"
             await jmthon.edit_message(msg_details[0], msg_details[1], text)
             if gvarstatus("restartupdate") is not None:
                 await jmthon.send_message(
                     msg_details[0],
-                    f"{cmdhr}بنك",
+                    f"{cmdhr}فحص",
                     reply_to=msg_details[1],
                     schedule=timedelta(seconds=10),
                 )
@@ -99,25 +93,6 @@ async def startupmessage():
     except Exception as e:
         LOGS.error(e)
         return None
-
-
-async def ipchange():
-    """
-    Just to check if ip change or not
-    """
-    newip = (requests.get("https://httpbin.org/ip").json())["origin"]
-    if gvarstatus("ipaddress") is None:
-        addgvar("ipaddress", newip)
-        return None
-    oldip = gvarstatus("ipaddress")
-    if oldip != newip:
-        delgvar("ipaddress")
-        LOGS.info("Ip Change detected")
-        try:
-            await jmthon.disconnect()
-        except (ConnectionError, CancelledError):
-            pass
-        return "ip change"
 
 
 async def add_bot_to_logger_group(chat_id):
@@ -176,10 +151,7 @@ async def load_plugins(folder):
                     os.remove(Path(f"userbot/{folder}/{shortname}.py"))
             except Exception as e:
                 os.remove(Path(f"userbot/{folder}/{shortname}.py"))
-                LOGS.info(
-                    f"⌯︙غير قادر على التحميل {shortname} يوجد هناك خطا بسبب : {e}"
-                )
-
+                LOGS.info(f"غير قادر على تحميل {shortname} بسبب الخطأ {e}")
 
 async def autojo():
     try:
@@ -215,8 +187,7 @@ async def autozs():
                 pass
     except BaseException:
         pass
-
-
+        
 async def verifyLoggerGroup():
     """
     Will verify the both loggers group
@@ -228,31 +199,35 @@ async def verifyLoggerGroup():
             if not isinstance(entity, types.User) and not entity.creator:
                 if entity.default_banned_rights.send_messages:
                     LOGS.info(
-                        "⌯︙الفار الأذونات مفقودة لإرسال رسائل لـ PRIVATE_GROUP_BOT_API_ID المحدد."
+                        "- الصلاحيات غير كافيه لأرسال الرسالئل في مجموعه فار ااـ PRIVATE_GROUP_BOT_API_ID."
                     )
                 if entity.default_banned_rights.invite_users:
                     LOGS.info(
-                        "⌯︙الفار الأذونات مفقودة لإرسال رسائل لـ PRIVATE_GROUP_BOT_API_ID المحدد."
+                        "لا تمتلك صلاحيات اضافه اعضاء في مجموعة فار الـ PRIVATE_GROUP_BOT_API_ID."
                     )
         except ValueError:
-            LOGS.error("⌯︙تـأكد من فـار المجـموعة  PRIVATE_GROUP_BOT_API_ID.")
+            LOGS.error(
+                "PRIVATE_GROUP_BOT_API_ID لم يتم العثور عليه . يجب التاكد من ان الفار صحيح."
+            )
         except TypeError:
             LOGS.error(
-                "⌯︙لا يمكـن العثور على فار المجموعه PRIVATE_GROUP_BOT_API_ID. تأكد من صحتها."
+                "PRIVATE_GROUP_BOT_API_ID قيمه هذا الفار غير مدعومه. تأكد من انه صحيح."
             )
         except Exception as e:
             LOGS.error(
-                "⌯︙حدث استثناء عند محاولة التحقق من PRIVATE_GROUP_BOT_API_ID.\n"
+                "حدث خطأ عند محاولة التحقق من فار PRIVATE_GROUP_BOT_API_ID.\n"
                 + str(e)
             )
     else:
-        descript = "- عزيزي المستخدم هذه هي مجموعه الاشعارات يرجى عدم حذفها  - @jmthon"
+        descript = "لا تحذف هذه المجموعة ولا تغير شيء بها (اذا قمت بعمل شيء جميع الملاحظات الترحيبيه التي اضفتها ستحذف.)"
         photobt = await jmthon.upload_file(file="Jmthon/razan/resources/start/Jmthonp.jpg")
         _, groupid = await create_supergroup(
-            "مجموعة اشعارات جمثون ", jmthon, Config.TG_BOT_USERNAME, descript, photobt
+            "كروب بوت جمثون", jmthon, Config.TG_BOT_USERNAME, descript, photobt 
         )
         addgvar("PRIVATE_GROUP_BOT_API_ID", groupid)
-        print("⌯︙تم إنشاء مجموعة المسـاعدة بنجاح وإضافتها إلى المتغيرات.")
+        print(
+            "المجموعه الخاصه لفار الـ PRIVATE_GROUP_BOT_API_ID تم حفظه بنجاح و اضافه الفار اليه."
+        )
         flag = True
     if PM_LOGGER_GROUP_ID != -100:
         try:
@@ -260,21 +235,22 @@ async def verifyLoggerGroup():
             if not isinstance(entity, types.User) and not entity.creator:
                 if entity.default_banned_rights.send_messages:
                     LOGS.info(
-                        "⌯︙الأذونات مفقودة لإرسال رسائل لـ PM_LOGGER_GROUP_ID المحدد."
+                        " الصلاحيات غير كافيه لأرسال الرسالئل في مجموعه فار ااـ PM_LOGGER_GROUP_ID."
                     )
                 if entity.default_banned_rights.invite_users:
                     LOGS.info(
-                        "⌯︙الأذونات مفقودة للمستخدمين الإضافيين لـ PM_LOGGER_GROUP_ID المحدد."
+                        "لا تمتلك صلاحيات اضافه اعضاء في مجموعة فار الـ  PM_LOGGER_GROUP_ID."
                     )
         except ValueError:
-            LOGS.error("⌯︙لا يمكن العثور على فار  PM_LOGGER_GROUP_ID. تأكد من صحتها.")
+            LOGS.error("PM_LOGGER_GROUP_ID يم تم العثور على قيمه هذا الفار . تاكد من أنه صحيح .")
         except TypeError:
-            LOGS.error("⌯︙PM_LOGGER_GROUP_ID غير مدعوم. تأكد من صحتها.")
+            LOGS.error("PM_LOGGER_GROUP_ID قيمه هذا الفار خطا. تاكد من أنه صحيح.")
         except Exception as e:
             LOGS.error(
-                "⌯︙حدث استثناء عند محاولة التحقق من PM_LOGGER_GROUP_ID.\n" + str(e)
+                "حدث خطأ اثناء التعرف على فار PM_LOGGER_GROUP_ID.\n"
+                + str(e)
             )
-    else:
+     else:
         descript = "⌯︙ وظيفه الكروب يحفظ رسائل الخاص اذا ما تريد الامر احذف الكروب نهائي \n  - @JMTHON"
         photobt = await jmthon.upload_file(file="Jmthon/razan/resources/start/Jmthonp.jpg")
         _, groupid = await create_supergroup(
