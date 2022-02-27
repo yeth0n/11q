@@ -46,9 +46,9 @@ async def get_readable_time(seconds: int) -> str:
 # gban
 
 
-async def admin_groups(jmthon):
+async def admin_groups(catub):
     catgroups = []
-    async for dialog in jmthon.client.iter_dialogs():
+    async for dialog in catub.iter_dialogs():
         entity = dialog.entity
         if (
             isinstance(entity, Channel)
@@ -57,7 +57,6 @@ async def admin_groups(jmthon):
         ):
             catgroups.append(entity.id)
     return catgroups
-
 
 
 # https://github.com/pokurt/LyndaRobot/blob/7556ca0efafd357008131fa88401a8bb8057006f/lynda/modules/helper_funcs/string_handling.py#L238
