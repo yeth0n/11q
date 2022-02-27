@@ -48,13 +48,13 @@ plugin_category = "bot"
     pattern="يوت(?:\s|$)([\s\S]*)",
     command=("يوت", plugin_category),
     info={
-        "header": "ytdl with inline buttons.",
-        "description": "To search and download youtube videos by inline buttons.",
-        "usage": "{tr}iytdl [URL / Text] or [Reply to URL / Text]",
+        "header": "للبحث و التحميل في اليوتيوب",
+        "description": "للبحث و تحميل الفيديوهات من اليوتيوب بصيغه انلاين.",
+        "usage": "{tr}يوت [رابط / نص] او [بالرد على رابط / نص]",
     },
 )
 async def iytdl_inline(event):
-    "ytdl with inline buttons."
+    "للبحث و التحميل في اليوتيوب"
     reply = await event.get_reply_message()
     reply_to_id = await reply_id(event)
     input_str = event.pattern_match.group(1)
@@ -67,7 +67,7 @@ async def iytdl_inline(event):
         return await edit_delete(
             event, "**▾∮ اكتب الرابط او قم بالرد ع رابط يوتيوب ✓**"
         )
-    catevent = await edit_or_reply(
+    jmthonevent = await edit_or_reply(
         event, f"**▾∮ جاري البحث في اليوتيوب : ☟** \n`'{input_url}'`"
     )
     flag = True
@@ -85,10 +85,10 @@ async def iytdl_inline(event):
         if cout > 5:
             flag = False
     if results:
-        await catevent.delete()
+        await jmthonevent.delete()
         await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     else:
-        await catevent.edit("**▾∮ عذرًا لم أستطيع ايجاد اي نتائج! ✘**")
+        await jmthonevent.edit("**▾∮ عذرًا لم أستطيع ايجاد اي نتائج! ✘**")
 
 
 @jmthon.tgbot.on(

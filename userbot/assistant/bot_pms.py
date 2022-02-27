@@ -1,11 +1,3 @@
-# @Jmthon - < https://t.me/Jmthon >
-# Copyright (C) 2021 - JMTHON-AR
-# All rights reserved.
-#
-# This file is a part of < https://github.com/JMTHON-AR/JMTHON >
-# Please read the GNU Affero General Public License in;
-# < https://github.com/JMTHON-AR/JM-THON/blob/master/LICENSE
-# ===============================================================
 import re
 from collections import defaultdict
 from datetime import datetime
@@ -56,11 +48,14 @@ async def check_bot_started_users(user, event):
     check = get_starter_details(user.id)
     if check is None:
         start_date = str(datetime.now().strftime("%B %d, %Y"))
-        notification = f"**▾∮ مرحبا عزيزي ↸**\n**▾ قام المستخدم ↫ ** 『{_format.mentionuser(user.first_name , user.id)}』 **بتشغيل البوت❕**\n**▾∮ الاسم ⪼** `{get_display_name(user)}`\n**▾∮الايدي ⪼ **`{user.id}`\n\n**⍣ⵧⵧⵧⵧⵧᴊᴍᴛʜᴏɴⵧⵧⵧⵧⵧ⍣**\n[𝙅𝙈𝙏𝙃𝙊𝙉 𝙐𝙎𝙀𝙍𝘽𝙊𝙏 🧸♥](https://t.me/JMTHON)"
+        notification = f"👤 {_format.mentionuser(user.first_name , user.id)} has started me.\
+                \n**الايدي: **`{user.id}`\
+                \n**الاسم: **{get_display_name(user)}"
     else:
         start_date = check.date
-        notification = f"**▾∮ قام المستخدم ↫ 「{_format.mentionuser(user.first_name , user.id)}」 بإعادة تشغيل البوت❗️**\n**▾∮الاسم ⪼ **`{get_display_name(user)}`\n**▾∮الايدي ⪼ ** `{user.id}`\n\n**⍣ⵧⵧⵧⵧⵧᴊᴍᴛʜᴏɴⵧⵧⵧⵧⵧ⍣**\n[𝙅𝙈𝙏𝙃𝙊𝙉 𝙐𝙎𝙀𝙍𝘽𝙊𝙏 🧸♥](https://t.me/JMTHON)"
-
+        notification = f"👤 {_format.mentionuser(user.first_name , user.id)} has restarted me.\
+                \n**الايدي: **`{user.id}`\
+                \n**الاسم: **{get_display_name(user)}"
     try:
         add_starter_to_db(user.id, get_display_name(user), start_date, user.username)
     except Exception as e:
@@ -69,8 +64,83 @@ async def check_bot_started_users(user, event):
         await event.client.send_message(BOTLOG_CHATID, notification)
 
 
+@jmthon.bot_cmd(
+    pattern=f"^/start({botusername})?([\s]+)?$",
+    incoming=True,
+    func=lambda e: e.is_private,
+)
+async def bot_start(event):
+    chat = await event.get_chat()
+    user = await jmthon.get_me()
+    if check_is_black_list(chat.id):
+        return
+    reply_to = await reply_id(event)
+    mention = f"[{chat.first_name}](tg://user?id={chat.id})"
+    my_mention = f"[{user.first_name}](tg://user?id={user.id})"
+    first = chat.first_name
+    last = chat.last_name
+    fullname = f"{first} {last}" if last else first
+    username = f"@{chat.username}" if chat.username else mention
+    userid = chat.id
+    my_first = user.first_name
+    my_last = user.last_name
+    my_fullname = f"{my_first} {my_last}" if my_last else my_first
+    my_username = f"@{user.username}" if user.username else my_mention
+    if chat.id != Config.OWNER_ID:
+        customstrmsg = gvarstatus("START_TEXT") or None
+        if customstrmsg is not None:
+            start_msg = customstrmsg.format(
+                mention=mention,
+                first=first,
+                last=last,
+                fullname=fullname,
+                username=username,
+                userid=userid,
+                my_first=my_first,
+                my_last=my_last,
+                my_fullname=my_fullname,
+                my_username=my_username,
+                my_mention=my_mention,
+            )
+        else:
+            start_msg = f"اهلا ! 👤{mention},\
+                        \nانا هو البوت المساعد الخاص بـ {my_mention}.\
+                        \nيمكنك التواصل مع مالك الحسابمن هنا.\
+                        \n\nتم صنع بواسطه سوري [جمثون](https://t.me/jmthon]"
+        buttons = [
+            (
+                Button.url("Repo", "https://github.com/JMTHON-AR/jmthon"),
+                Button.url(
+                    "Deploy",
+                    "https://dashboard.heroku.com/new?button-url=https%3A%2F%2Fgithub.com%2FJMTHON-AR%2Fjmthon&template=https%3A%2F%2Fgithub.com%2FJMTHON-AR%2Fjmthon",
+                ),
+            )
+        ]
+    else:
+        start_msg = "اهلا بك مطور البوت!\
+            \nكيف يمكنني مساعدتك ?"
+        buttons = None
+    try:
+        await event.client.send_message(
+            chat.id,
+            start_msg,
+            link_preview=False,
+            buttons=buttons,
+            reply_to=reply_to,
+        )
+    except Exception as e:
+        if BOTLOG:
+            await event.client.send_message(
+                BOTLOG_CHATID,
+                f"**خطأ**\nهنالك خطأ اثناء محاولة مستخدم بتشغيل بوتك.\\\x1f                \n`{e}`",
+            )
+
+    else:
+        await check_bot_started_users(chat, event)
+
+
 @jmthon.bot_cmd(incoming=True, func=lambda e: e.is_private)
-async def bot_pms(event):
+async def bot_pms(event):  # sourcery no-metrics
     chat = await event.get_chat()
     if check_is_black_list(chat.id):
         return
@@ -83,7 +153,7 @@ async def bot_pms(event):
             if BOTLOG:
                 await event.client.send_message(
                     BOTLOG_CHATID,
-                    f"**خـطأ**\nأثناء تخزين تفاصيل الرسائل في قاعدة البيانات\n`{str(e)}`",
+                    f"**خطـأ**\nاثناء التعرف على معلومات الرسالة في قاعده البيانات\n`{str(e)}`",
                 )
     else:
         if event.text.startswith("/"):
@@ -110,9 +180,9 @@ async def bot_pms(event):
                         user_id, event.text, reply_to=reply_msg, link_preview=False
                     )
             except UserIsBlockedError:
-                return await event.reply("هـذا البـوت تم حـظره بواسـطه المستخدم ")
+                return await event.reply("تم حظر البوت من قبل المستخدم")
             except Exception as e:
-                return await event.reply(f"**خطـأ:**\n`{str(e)}`")
+                return await event.reply(f"**Error:**\n`{e}`")
             try:
                 add_user_to_db(
                     reply_to, user_name, user_id, reply_msg, event.id, msg.id
@@ -122,7 +192,7 @@ async def bot_pms(event):
                 if BOTLOG:
                     await event.client.send_message(
                         BOTLOG_CHATID,
-                        f"**خـطأ**\nأثناء تخزين تفاصيل الرسائل في قاعدة البيانات\n`{str(e)}`",
+                        f"**خطـأ**\nاثناء التعرف على معلومات الرسالة في قاعده البيانات\n`{e}`",
                     )
 
 
@@ -135,15 +205,13 @@ async def bot_pms_edit(event):  # sourcery no-metrics
         users = get_user_reply(event.id)
         if users is None:
             return
-        reply_msg = None
-        for user in users:
-            if user.chat_id == str(chat.id):
-                reply_msg = user.message_id
-                break
-        if reply_msg:
+        if reply_msg := next(
+            (user.message_id for user in users if user.chat_id == str(chat.id)),
+            None,
+        ):
             await event.client.send_message(
                 Config.OWNER_ID,
-                f"▾∮ قام المستخدم ↫  「{_format.mentionuser(get_display_name(chat) , chat.id)}」 بتعديل الرسالة⇅",
+                f"⬆️ **هذه الرسالة تم تعديلها من قبل المستخدم** {_format.mentionuser(get_display_name(chat) , chat.id)} كـ :",
                 reply_to=reply_msg,
             )
             msg = await event.forward_to(Config.OWNER_ID)
@@ -154,8 +222,9 @@ async def bot_pms_edit(event):  # sourcery no-metrics
                 if BOTLOG:
                     await event.client.send_message(
                         BOTLOG_CHATID,
-                        f"**خـطأ**\nأثناء تخزين تفاصيل الرسائل في قاعدة البيانات\n`{str(e)}`",
+                        f"**خطـأ**\nاثناء التعرف على معلومات الرسالة في قاعده البيانات\n`{e}`",
                     )
+
     else:
         reply_to = await reply_id(event)
         if reply_to is not None:
@@ -196,11 +265,14 @@ async def handler(event):
                 except Exception as e:
                     LOGS.error(str(e))
         if users_1 is not None:
-            reply_msg = None
-            for user in users_1:
-                if user.chat_id != Config.OWNER_ID:
-                    reply_msg = user.message_id
-                    break
+            reply_msg = next(
+                (
+                    user.message_id
+                    for user in users_1
+                    if user.chat_id != Config.OWNER_ID
+                ),
+                None,
+            )
             try:
                 if reply_msg:
                     users = get_user_id(reply_msg)
@@ -212,17 +284,14 @@ async def handler(event):
                         return
                     await event.client.send_message(
                         Config.OWNER_ID,
-                        f"▾∮ قام المستخدم ↫  「{_format.mentionuser(user_name , user_id)}」 بحذف الرسالة ↧",
+                        f"⬆️ **هذه الرسالة تم حذفها من قبل المستخدم** {_format.mentionuser(user_name , user_id)}.",
                         reply_to=reply_msg,
                     )
             except Exception as e:
                 LOGS.error(str(e))
 
 
-@jmthon.bot_cmd(
-    pattern=f"^معلومات$",
-    from_users=Config.OWNER_ID,
-)
+@jmthon.bot_cmd(pattern="^معلومات$", from_users=Config.OWNER_ID)
 async def bot_start(event):
     reply_to = await reply_id(event)
     if not reply_to:
@@ -267,8 +336,10 @@ async def send_flood_alert(user_) -> None:
         except Exception as e:
             if BOTLOG:
                 await jmthon.tgbot.send_message(
-                    BOTLOG_CHATID, f"**Error:**\nWhile updating flood count\n`{str(e)}`"
+                    BOTLOG_CHATID,
+                    f"**Error:**\nWhile updating flood count\n`{e}`",
                 )
+
         flood_count = FloodConfig.ALERT[user_.id]["count"]
     else:
         flood_count = FloodConfig.ALERT[user_.id]["count"] = 1
@@ -283,8 +354,8 @@ async def send_flood_alert(user_) -> None:
         if flood_count >= FloodConfig.AUTOBAN:
             if user_.id in Config.SUDO_USERS:
                 sudo_spam = (
-                    f"**Sudo User** {_format.mentionuser(user_.first_name , user_.id)}:\n  ID: {user_.id}\n\n"
-                    "Is Flooding your bot !, Check `.help delsudo` to remove the user from Sudo."
+                    f"**المالك الثانوي** {_format.mentionuser(user_.first_name , user_.id)}:\n  الايدي: {user_.id}\n\n"
+                    "يقوم بعمل تكرار في بوتك  ! تأكظ من الاوامر و احذفه من قائمه النالك الثانوي."
                 )
                 if BOTLOG:
                     await jmthon.tgbot.send_message(BOTLOG_CHATID, sudo_spam)
@@ -392,9 +463,9 @@ async def antif_on_msg(event):
     user_id = chat.id
     if check_is_black_list(user_id):
         raise StopPropagation
-    elif await is_flood(user_id):
+    if await is_flood(user_id):
         await send_flood_alert(chat)
         FloodConfig.BANNED_USERS.add(user_id)
         raise StopPropagation
-    elif user_id in FloodConfig.BANNED_USERS:
+    if user_id in FloodConfig.BANNED_USERS:
         FloodConfig.BANNED_USERS.remove(user_id)
