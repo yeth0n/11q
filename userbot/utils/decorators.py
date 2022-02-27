@@ -5,11 +5,9 @@ import sys
 import traceback
 from pathlib import Path
 
-from telethon import events
-
 from .. import CMD_LIST, LOAD_PLUG, SUDO_LIST
 from ..Config import Config
-from ..core.data import blacklist_chats_list
+from ..core.data import _sudousers_list, blacklist_chats_list
 from ..core.events import MessageEdited, NewMessage
 from ..core.logger import logging
 from ..core.session import jmthon
@@ -27,10 +25,8 @@ def admin_cmd(pattern=None, command=None, **args):
     file_test = Path(previous_stack_frame.filename)
     file_test = file_test.stem.replace(".py", "")
     allow_sudo = args.get("allow_sudo", False)
-    # get the pattern from the decorator
     if pattern is not None:
         if pattern.startswith(r"\#"):
-            # special fix for snip.py
             args["pattern"] = re.compile(pattern)
         elif pattern.startswith(r"^"):
             args["pattern"] = re.compile(pattern)
@@ -41,12 +37,12 @@ def admin_cmd(pattern=None, command=None, **args):
                 CMD_LIST.update({file_test: [cmd]})
         else:
             if len(Config.COMMAND_HAND_LER) == 2:
-                jmthreg = "^" + Config.COMMAND_HAND_LER
+                jmthonreg = "^" + Config.COMMAND_HAND_LER
                 reg = Config.COMMAND_HAND_LER[1]
             elif len(Config.COMMAND_HAND_LER) == 1:
-                jmthreg = "^\\" + Config.COMMAND_HAND_LER
+                jmthonreg = "^\\" + Config.COMMAND_HAND_LER
                 reg = Config.COMMAND_HAND_LER
-            args["pattern"] = re.compile(jmthreg + pattern)
+            args["pattern"] = re.compile(jmthonreg + pattern)
             if command is not None:
                 cmd = reg + command
             else:
@@ -57,35 +53,22 @@ def admin_cmd(pattern=None, command=None, **args):
                 CMD_LIST[file_test].append(cmd)
             except BaseException:
                 CMD_LIST.update({file_test: [cmd]})
-
     args["outgoing"] = True
-    # should this command be available for other users?
     if allow_sudo:
         args["from_users"] = list(Config.SUDO_USERS)
-        # Mutually exclusive with outgoing (can only set one of either).
         args["incoming"] = True
         del args["allow_sudo"]
-
-    # error handling condition check
     elif "incoming" in args and not args["incoming"]:
         args["outgoing"] = True
-
-    # add blacklist chats, UB should not respond in these chats
-    args["blacklist_chats"] = True
-    black_list_chats = list(Config.UB_BLACK_LIST_CHAT)
-    if black_list_chats:
-        args["chats"] = black_list_chats
-
-    # add blacklist chats, UB should not respond in these chats
+    if gvarstatus("blacklist_chats") is not None:
+        args["blacklist_chats"] = True
+        args["chats"] = blacklist_chats_list()
     if "allow_edited_updates" in args and args["allow_edited_updates"]:
         del args["allow_edited_updates"]
-
-    # check if the plugin should listen for outgoing 'messages'
-
-    return events.NewMessage(**args)
+    return NewMessage(**args)
 
 
-def sudo_cmd(pattern=None, command=None, **args):
+def sudo_cmd(pattern=None, command=None, **args): 
     args["func"] = lambda e: e.via_bot_id is None
     stack = inspect.stack()
     previous_stack_frame = stack[1]
@@ -106,12 +89,12 @@ def sudo_cmd(pattern=None, command=None, **args):
                 SUDO_LIST.update({file_test: [cmd]})
         else:
             if len(Config.SUDO_COMMAND_HAND_LER) == 2:
-                catreg = "^" + Config.SUDO_COMMAND_HAND_LER
+                jmthonreg = "^" + Config.SUDO_COMMAND_HAND_LER
                 reg = Config.SUDO_COMMAND_HAND_LER[1]
             elif len(Config.SUDO_COMMAND_HAND_LER) == 1:
-                catreg = "^\\" + Config.SUDO_COMMAND_HAND_LER
+                jmthonreg = "^\\" + Config.SUDO_COMMAND_HAND_LER
                 reg = Config.COMMAND_HAND_LER
-            args["pattern"] = re.compile(catreg + pattern)
+            args["pattern"] = re.compile(jmthonreg + pattern)
             if command is not None:
                 cmd = reg + command
             else:
@@ -125,7 +108,7 @@ def sudo_cmd(pattern=None, command=None, **args):
     args["outgoing"] = True
     # should this command be available for other users?
     if allow_sudo:
-        args["from_users"] = list(Config.SUDO_USERS)
+        args["from_users"] = list(_sudousers_list())
         # Mutually exclusive with outgoing (can only set one of either).
         args["incoming"] = True
         del args["allow_sudo"]
@@ -133,15 +116,15 @@ def sudo_cmd(pattern=None, command=None, **args):
     elif "incoming" in args and not args["incoming"]:
         args["outgoing"] = True
     # add blacklist chats, UB should not respond in these chats
-    args["blacklist_chats"] = True
-    black_list_chats = list(Config.UB_BLACK_LIST_CHAT)
-    if black_list_chats:
-        args["chats"] = black_list_chats
+    if gvarstatus("blacklist_chats") is not None:
+        args["blacklist_chats"] = True
+        args["chats"] = blacklist_chats_list()
     # add blacklist chats, UB should not respond in these chats
     if "allow_edited_updates" in args and args["allow_edited_updates"]:
         del args["allow_edited_updates"]
     # check if the plugin should listen for outgoing 'messages'
-    return events.NewMessage(**args)
+    if gvarstatus("sudoenable") is not None:
+        return NewMessage(**args)
 
 
 def errors_handler(func):
@@ -152,34 +135,34 @@ def errors_handler(func):
             if Config.PRIVATE_GROUP_BOT_API_ID != 0:
                 return
             date = (datetime.datetime.now()).strftime("%m/%d/%Y, %H:%M:%S")
-            ftext = f"\nDisclaimer:\nThis file is pasted only here ONLY here,\
-                                  \nwe logged only fact of error and date,\nwe respect your privacy,\
-                                  \nyou may not report this error if you've\
-                                  \nany confidential data here, no one will see your data\
-                                  \n\n--------BEGIN USERBOT TRACEBACK LOG--------\
-                                  \nDate: {date}\nGroup ID: {str(check.chat_id)}\
-                                  \nSender ID: {str(check.sender_id)}\
-                                  \n\nEvent Trigger:\n{str(check.text)}\
-                                  \n\nTraceback info:\n{str(traceback.format_exc())}\
-                                  \n\nError text:\n{str(sys.exc_info()[1])}"
+            ftext = f"\تحذيـر:\nهذا الملف تم لصقه فقط هنا فقط هنا,\
+                                  \nلقد قمنا بتسجيل الخطأ والتاريخ الخطأ فقط ,\nنحن نحترم خصوصيتك,\
+                                  \nلا يجوز لك الإبلاغ عن هذا الخطأ إذا كنت\
+                                  \nلديك معلومات خاصه هنا ، لن يرى أحد معلوماتك\
+                                  \n\n-------- معلومات عن الخطـأ--------\
+                                  \nالتاريخ: {date}\nايدي المجموعه: {str(check.chat_id)}\
+                                  \nايدي المرسل: {str(check.sender_id)}\
+                                  \n\nمشغل الحدث:\n{str(check.text)}\
+                                  \n\nمعلومات المشكله:\n{str(traceback.format_exc())}\
+                                  \n\nنص الخطأ:\n{str(sys.exc_info()[1])}"
             new = {
                 "error": str(sys.exc_info()[1]),
                 "date": datetime.datetime.now(),
             }
 
-            ftext += "\n\n-------- هـذه واجـهة المشاكل --------"
+            ftext += "\n\n--------معلومات عن الخطـأ--------"
             command = 'git log --pretty=format:"%an: %s" -5'
-            ftext += "\n\n\nاخـر 5 تعـديلات:\n"
+            ftext += "\n\n\nاخر 5 تعديلات:\n"
             output = (await runcmd(command))[:2]
             result = output[0] + output[1]
             ftext += result
             pastelink = await paste_message(ftext)
-            text = "**تقرير خطا جمثون**\n\n"
-            link = "[هنا](https://t.me/GroupJmthon)"
-            text += "إذا كنت تريد يمكنك الإبلاغ عن ذلك"
-            text += f"- فقط قم بإعادة توجيه هذه الرسالة {link}.\n"
-            text += "لا يتم تسجيل اي خطا فقط التاريخ والوقت\n\n"
-            text += f"**⌯︙تقرير الخطأ : ** [{new['error']}]({pastelink})"
+            text = "**هنالك مشكله معينه لديك**\n\n"
+            link = "[هنا](https://t.me/jmthon_support)"
+            text += "اذا اردت يمكنك التبليغ عن المشكله"
+            text += f"- فقط قم بتوجيه الرسالة الى  {link}.\n"
+            text += "لم يتم حفظ اي معلومات فقط الخطا وتاريخ الخطأ\n\n"
+            text += f"**التقرير عن الخطأ : ** [{new['error']}]({pastelink})"
             await check.client.send_message(
                 Config.PRIVATE_GROUP_BOT_API_ID, text, link_preview=False
             )
