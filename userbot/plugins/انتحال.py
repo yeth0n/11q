@@ -24,7 +24,7 @@ DEFAULTUSERBIO = (
 )
 
 
-@jmthon.ar_md(
+@jmthon.ar_cmd(
     pattern="انتحال(?:\s|$)([\s\S]*)",
     command=("انتحال", plugin_category),
     info={
@@ -68,7 +68,7 @@ async def _(event):
         )
 
 
-@jmthon.ar_md(
+@jmthon.ar_cmd(
     pattern="اعادة$",
     command=("اعادة", plugin_category),
     info={
