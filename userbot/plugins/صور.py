@@ -1,5 +1,4 @@
 # image search for catuserbot
-#translate for Arabic by @RR9R7
 import os
 import shutil
 
@@ -22,14 +21,14 @@ plugin_category = "misc"
         "description": "للبحث عن الصور في جوجل . بالوضع الاصلي يرسل 3 صور تستطيع الحصول على ما يقارب من 10 صور بكتابه الرقم شاهد الامثله",
         "usage": ["{tr}صور <1-10> <عنوان>", "{tr}صور <عنوان>"],
         "examples": [
-            "{tr}صور 10 catuserbot",
-            "{tr}صور catuserbot",
-            "{tr}صور 7 catuserbot",
+            "{tr}img 10 catuserbot",
+            "{tr}img catuserbot",
+            "{tr}img 7 catuserbot",
         ],
     },
 )
 async def img_sampler(event):
-    "للبحث عن الصور في جوجل ."
+    "Google image search."
     reply_to_id = await reply_id(event)
     if event.is_reply and not event.pattern_match.group(2):
         query = await event.get_reply_message()
@@ -40,7 +39,7 @@ async def img_sampler(event):
         return await edit_or_reply(
             event, "- يجب عليك كتابه ما تريد البحث عنه مع الامر"
         )
-    cat = await edit_or_reply(event, "**- يتم البحث انتظر قليلا**"
+    jmthon = await edit_or_reply(event, "**- يتم البحث انتظر قليلا**")
     if event.pattern_match.group(1) != "":
         lim = int(event.pattern_match.group(1))
         if lim > 10:
@@ -61,7 +60,7 @@ async def img_sampler(event):
     try:
         paths = response.download(arguments)
     except Exception as e:
-        return await cat.edit(f"خطأ: \n`{e}`")
+        return await jmthon.edit(f"Error: \n`{e}`")
     lst = paths[0][query.replace(",", " ")]
     try:
         await event.client.send_file(event.chat_id, lst, reply_to=reply_to_id)
@@ -72,4 +71,4 @@ async def img_sampler(event):
             except MediaEmptyError:
                 pass
     shutil.rmtree(os.path.dirname(os.path.abspath(lst[0])))
-    await cat.delete()
+    await jmthon.delete()
