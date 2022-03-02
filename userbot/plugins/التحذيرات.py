@@ -85,8 +85,9 @@ async def _(event):
     text += reasons
     await event.edit(text)
 
-
-@cjmthonon(admin_cmd(pattern="حذف التحذير(?: |$)(.*)"))
+@jmthon.ar_cmd(
+    pattern="حذف التحذير(?: |$)(.*)",
+    command=("التحذيرات", plugin_category))
 async def _(event):
     reply_message = await event.get_reply_message()
     sql.reset_warns(reply_message.sender_id, event.chat_id)
