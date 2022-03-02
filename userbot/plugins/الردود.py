@@ -94,28 +94,7 @@ async def filter_incoming_handler(event):  # sourcery no-metrics
 
 @jmthon.ar_cmd(
     pattern="رد (.*)",
-    command=("رد", plugin_category),
-    info={
-        "header": "لحفظ رد معين في مجموعه.",
-        "description": "إذا أرسل أي مستخدم هذا الرد ، فسيقوم البوت بالرد عليه تلقائيا ",
-        "option": {
-            "{mention}": "لعمل منشن للمستخدم",
-            "{title}": "لعرض اسم المجموعه",
-            "{count}": "لعرض عدد الاعضاء",
-            "{first}": "لعرض الاسم الاول",
-            "{last}": "للعرض الاسم الثاني",
-            "{fullname}": "لعرض الاسم كامل",
-            "{userid}": "لاستخدام الايدي",
-            "{username}": "لعرض معرف المستخدم",
-            "{my_first}": "لعرض الاسم الاول الخاص بي",
-            "{my_fullname}": "لعرض الاسم الكامل الخاص بي",
-            "{my_last}": "لعرض اسمي الثاني ",
-            "{my_mention}": "للعمل تاك لنفسي,
-            "{my_username}": "لاستخدام معرفي.",
-        },
-        "usage": "{tr}رد <الرد>",
-    },
-)
+    command=("رد", plugin_category))
 async def add_new_filter(event):
     "لحفظ رد في المجموعه"
     keyword = event.pattern_match.group(1)
