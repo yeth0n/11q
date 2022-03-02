@@ -57,7 +57,7 @@ async def bad(event):  # sourcery no-metrics
     if vname in vlist:
         if vname in oldvars:
             vname = oldvars[vname]
-        if cmd == "وضع_":
+        if cmd == "اضف_":
             if not vinfo and vname == "ALIVE_TEMPLATE":
                 return await edit_delete(event, f"تأكد من  @JJOTT")
             if not vinfo:
