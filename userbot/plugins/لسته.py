@@ -8,12 +8,12 @@ import re
 from telethon import Button
 
 from ..Config import Config
-from . import catub, edit_delete, reply_id
+from . import jmthon, edit_delete, reply_id
 
 plugin_category = "tools"
 # regex obtained from:
 # https://github.com/PaulSonOfLars/tgbot/blob/master/tg_bot/modules/helper_funcs/string_handling.py#L23
-@catub.cat_cmd(
+@jmthon.ar_cmd(
     pattern="لستة(?: |$)(.*)",
     command=("لستة", plugin_category),
     info={
