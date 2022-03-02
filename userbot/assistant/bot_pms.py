@@ -7,6 +7,10 @@ from telethon import Button, events
 from telethon.errors import UserIsBlockedError
 from telethon.events import CallbackQuery, StopPropagation
 from telethon.utils import get_display_name
+from userbot import BOTLOG, BOTLOG_CHATID, jmthon
+
+from ..Config import Config
+from ..core.inlinebot import *
 
 from userbot import Config, jmthon
 
@@ -24,8 +28,8 @@ from ..sql_helper.bot_pms_sql import (
 )
 from ..sql_helper.bot_starters import add_starter_to_db, get_starter_details
 from ..sql_helper.globals import delgvar, gvarstatus
-from . import BOTLOG, BOTLOG_CHATID
-from .botmanagers import ban_user_from_bot
+#from . import BOTLOG, BOTLOG_CHATID
+from userbot.assistant.botmanagers import ban_user_from_bot
 
 LOGS = logging.getLogger(__name__)
 
@@ -106,7 +110,7 @@ async def bot_start(event):
             start_msg = f"اهلا ! 👤{mention},\
                         \nانا هو البوت المساعد الخاص بـ {my_mention}.\
                         \nيمكنك التواصل مع مالك الحسابمن هنا.\
-                        \n\nتم صنع بواسطه سوري [جمثون](https://t.me/jmthon]"
+                        \n\nتم صنع بواسطه سوري [جمثون](https://t.me/jmthon)"
         buttons = [
             (
                 Button.url("Repo", "https://github.com/JMTHON-AR/jmthon"),
@@ -117,9 +121,17 @@ async def bot_start(event):
             )
         ]
     else:
-        start_msg = "اهلا بك مطور البوت!\
-            \nكيف يمكنني مساعدتك ?"
-        buttons = None
+        start_msg = "اهلا بك مطور البوت\
+            \nكيف يمكنني مساعدتك؟"
+        buttons = [
+                [
+                    Button.url("• السورس •", "https://t.me/jmthon"),
+                    Button.inline("• لوحة التحكم •", data="gibcmd"),
+                ],
+                [
+                    Button.inline("• دخول عبر تيرمكس •", data="jm_hhack"),
+                ],
+            ]
     try:
         await event.client.send_message(
             chat.id,
@@ -138,6 +150,17 @@ async def bot_start(event):
     else:
         await check_bot_started_users(chat, event)
 
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"gibcmd")))
+async def users(event):
+    await event.delete()
+    rorza = "**▾∮ قائـمه اوامر المطور **\n* تستخدم في ↫ `{Config.TG_BOT_USERNAME} ` فقط! `\n**⍣ⵧⵧⵧⵧⵧᴊᴍᴛʜᴏɴⵧⵧⵧⵧⵧ⍣**\n\n*الامر  ( اذاعة  ) \n- لعمل اذاعة لمستخدمي البوت ◛ ↶\n**⋆ قم بالرد ع الرسالة لاذاعتها للمستخدمين ↸**\n\n*الامر ( معلومات ) \n- لمعرفة الملصقات المرسلة ↶\n**⋆ بالرد ع المستخدم لجلب معلوماتة **\n\n*الامر ( حظر + سبب )\n- لحظر مستخدم من البوت \n**⋆ بالرد ع المستخدم مع سبب مثل **\n**حظر @RR9R7 قمت بازعاجي**\n\n* الامر ( الغاء حظر ) \n لالغاء حظر المستخدم من البوت √\n**⋆ الامر والمعرف والسبب (اختياري) مثل **\n**الغاء حظر @RR9R7 + السبب اختياري**\n\n**⋆ الامر ( المحظورين )\n- لمعرفة المحظورين من البوت  **\n\n**⋆ امر ( المستخدمين ) \n- لمعرفة مستخدمين بوتك  **\n\n**⋆ الاوامر ( التكرار + تفعيل / تعطيل ) \n- تشغيل وايقاف التكرار (في البوت) ↶**\n* عند التشغيل يحظر المزعجين تلقائيًا ⊝\n\n\n**⍣ⵧⵧⵧⵧⵧᴊᴍᴛʜᴏɴⵧⵧⵧⵧⵧ⍣**\n𝙅𝙈𝙏𝙃𝙊𝙉 𝙐𝙎𝙀𝙍𝘽𝙊𝙏 🧸♥"
+    await tgbot.send_message(event.chat_id, rorza)
+
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"jm_hhack")))
+async def users(event):
+    await event.delete()
+    rorza = "هذه الميزه مدفوعه يرجى مراسله المطور لتفعيلها لك @RR9R7"
+    await tgbot.send_message(event.chat_id, rorza)
 
 @jmthon.bot_cmd(incoming=True, func=lambda e: e.is_private)
 async def bot_pms(event):  # sourcery no-metrics
