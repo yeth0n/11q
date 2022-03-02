@@ -1,13 +1,17 @@
 from userbot import CMD_HELP
-from userbot import catub as jmthon
+from userbot import jmthon
 
 GCAST_BLACKLIST = [
     -1001118102804,
     -1001161919602,
     ]
 #
+plugin_category = "tools"
 
-@jmthon.on(admin_cmd(pattern="للكروبات(?: |$)(.*)"))
+
+@jmthon.ar_cmd(
+    pattern="للكروبات(?: |$)(.*)",
+    command=(".", plugin_category))
 async def gcast(event):
     jmthon = event.pattern_match.group(1)
     if jmthon:
@@ -15,7 +19,7 @@ async def gcast(event):
     elif event.is_reply:
         msg = await event.get_reply_message()
     else:
-        await eor(event, "**-يجب الرد على رسالو او وسائط او كتابه النص مع الامر**")
+        await edit_or_reply(event, "**-يجب الرد على رساله او وسائط او كتابه النص مع الامر**")
         return
     roz = await edit_or_reply(event, "⌔∮ يتم الاذاعة في الخاص انتظر لحضه")
     er = 0
@@ -33,7 +37,9 @@ async def gcast(event):
         f"**- تم بنجاح الأذاعة الى ** `{done}` **من الدردشات ، خطأ في ارسال الى ** `{er}` **من الدردشات**"
     )
     
-@jmthon.on(admin_cmd(pattern="للخاص(?: |$)(.*)"))
+@jmthon.ar_cmd(
+    pattern="للخاص(?: |$)(.*)",
+    command=(".", plugin_category))
 async def gucast(event):
     jmthon = event.pattern_match.group(1)
     if jmthon:
@@ -41,7 +47,7 @@ async def gucast(event):
     elif event.is_reply:
         msg = await event.get_reply_message()
     else:
-        await eor(event, "**-يجب الرد على رسالو او وسائط او كتابه النص مع الامر**")
+        await edit_or_reply(event, "**-يجب الرد على رساله او وسائط او كتابه النص مع الامر**")
         return
     roz = await edit_or_reply(event, "⌔∮ يتم الاذاعة في الخاص انتظر لحضه")
     er = 0
