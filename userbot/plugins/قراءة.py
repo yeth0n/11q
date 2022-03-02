@@ -3,7 +3,7 @@ import os
 from userbot import jmthon
 from userbot.utils import admin_cmd, sudo_cmd
 #jmthon 
-
+plugin_category = "extra"
 @jmthon.ar_cmd(
     pattern="قراءة$",
     command=("قراءة", plugin_category),
