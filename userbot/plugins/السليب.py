@@ -3,7 +3,7 @@ from datetime import datetime
 
 from telethon.tl import functions, types
 
-from userbot import catub
+from userbot import jmthon
 
 from ..Config import Config
 from ..core.logger import logging
@@ -34,7 +34,7 @@ class AFK:
 AFK_ = AFK()
 
 
-@catub.cat_cmd(outgoing=True, edited=False)
+@jmthon.ar_cmd(outgoing=True, edited=False)
 async def set_not_afk(event):
     if AFK_.afk_on is False:
         return
@@ -80,7 +80,7 @@ async def set_not_afk(event):
             )
 
 
-@catub.cat_cmd(
+@jmthon.ar_cmd(
     incoming=True, func=lambda e: bool(e.mentioned or e.is_private), edited=False
 )
 async def on_afk(event):
@@ -165,22 +165,9 @@ async def on_afk(event):
             )
 
 
-@catub.cat_cmd(
+@jmthon.ar_cmd(
     pattern="سليب(?:\s|$)([\s\S]*)",
-    command=("سليب", plugin_category),
-    info={
-        "header": "Enables afk for your account",
-        "description": "When you are in afk if any one tags you then your bot will reply as he is offline.\
-        AFK mean away from keyboard.",
-        "options": "If you want AFK reason with hyperlink use [ ; ] after reason, then paste the media link.",
-        "usage": [
-            "{tr}afk <reason>",
-            "{tr}afk <reason> ; <link>",
-        ],
-        "examples": "{tr}afk Let Me Sleep",
-        "note": "Switches off AFK when you type back anything, anywhere. You can use #afk in message to continue in afk without breaking it",
-    },
-)
+    command=("سليب", plugin_category))
 async def _(event):
     "To mark yourself as afk i.e. Away from keyboard"
     AFK_.USERAFK_ON = {}
@@ -225,21 +212,9 @@ async def _(event):
                 )
 
 
-@catub.cat_cmd(
+@jmthon.ar_cmd(
     pattern="سليب_ميديا(?:\s|$)([\s\S]*)",
-    command=("سليب_ميديا", plugin_category),
-    info={
-        "header": "Enables afk for your account",
-        "description": "When you are in afk if any one tags you then your bot will reply as he is offline.\
-         AFK mean away from keyboard. Here it supports media unlike afk command",
-        "options": "If you want AFK reason with hyperlink use [ ; ] after reason, then paste the media link.",
-        "usage": [
-            "{tr}mafk <reason> and reply to media",
-        ],
-        "examples": "{tr}mafk Let Me Sleep",
-        "note": "Switches off AFK when you type back anything, anywhere. You can use #afk in message to continue in afk without breaking it",
-    },
-)
+    command=("سليب_ميديا", plugin_category))
 async def _(event):
     "To mark yourself as afk i.e. Away from keyboard (supports media)"
     reply = await event.get_reply_message()
