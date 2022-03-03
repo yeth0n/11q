@@ -7,8 +7,8 @@ import heroku3
 import urllib3
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
-
-from userbot import HEROKU_APP, UPSTREAM_REPO_URL, catub
+#
+from userbot import HEROKU_APP, UPSTREAM_REPO_URL, jmthon
 
 from ..Config import Config
 from ..core.logger import logging
@@ -20,11 +20,10 @@ from ..sql_helper.global_collection import (
 )
 from ..sql_helper.globals import delgvar
 
-plugin_category = "tools"
 cmdhd = Config.COMMAND_HAND_LER
 
 LOGS = logging.getLogger(__name__)
-# -- Constants -- #
+# -- ثـوابت -- #
 
 HEROKU_APP_NAME = Config.HEROKU_APP_NAME or None
 HEROKU_API_KEY = Config.HEROKU_API_KEY or None
@@ -46,7 +45,7 @@ IS_SELECTED_DIFFERENT_BRANCH = (
 )
 
 
-# -- Constants End -- #
+# -- انتهاء الثوابت -- #
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -65,7 +64,7 @@ async def gen_chlog(repo, diff):
 
 async def print_changelogs(event, ac_br, changelog):
     changelog_str = (
-        f"**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`"
+        f"**قام مطورين السورس بتحديث جمثون**\n**التـغييرات\n** {changelog}"
     )
     if len(changelog_str) > 4096:
         await event.edit("`Changelog is too big, view the file to see it.`")
@@ -106,10 +105,10 @@ async def update(event, repo, ups_rem, ac_br):
     except GitCommandError:
         repo.git.reset("--hard", "FETCH_HEAD")
     await update_requirements()
-    sandy = await event.edit(
-        "`Successfully Updated!\n" "Bot is restarting... Wait for a minute!`"
+    jasme = await event.edit(
+        "**-  تم تحديث سورس جمثون بنجاح انتظر قليلا سوف نخبرك بعد اعادة التشغيل !**"
     )
-    await event.client.reload(sandy)
+    await event.client.reload(jasme)
 
 
 async def deploy(event, repo, ups_rem, ac_br, txt):
@@ -134,7 +133,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
             f"{txt}\n" "`Invalid Heroku credentials for deploying userbot dyno.`"
         )
         return repo.__del__()
-    sandy = await event.edit(
+    jasme = await event.edit(
         "`Userbot dyno build in progress, please wait until the process finishes it usually takes 4 to 5 minutes .`"
     )
     try:
@@ -145,7 +144,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
     except Exception as e:
         LOGS.error(e)
     try:
-        add_to_collectionlist("restart_update", [sandy.chat_id, sandy.id])
+        add_to_collectionlist("restart_update", [jasme.chat_id, jasme.id])
     except Exception as e:
         LOGS.error(e)
     ups_rem.fetch(ac_br)
@@ -183,27 +182,13 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         pass
 
 
-@catub.cat_cmd(
-    pattern="update(| now)?$",
-    command=("update", plugin_category),
-    info={
-        "header": "To update userbot.",
-        "description": "I recommend you to do update deploy atlest once a week.",
-        "options": {
-            "now": "Will update bot but requirements doesnt update.",
-            "deploy": "Bot will update completly with requirements also.",
-        },
-        "usage": [
-            "{tr}update",
-            "{tr}update now",
-            "{tr}update deploy",
-        ],
-    },
-)
+@jmthon.on(admin_cmd(pattern="تحديث(| الان)?$"))
 async def upstream(event):
     "To check if the bot is up to date and update if specified"
     conf = event.pattern_match.group(1).strip()
-    event = await edit_or_reply(event, "`Checking for updates, please wait....`")
+    event = await edit_or_reply(
+        event, "**⌔∮ يـتـم البـحـث عـن تـحديثـات سـورس جـمـثـون انـتـظـر**"
+    )
     off_repo = UPSTREAM_REPO_URL
     force_update = False
     if HEROKU_API_KEY is None or HEROKU_APP_NAME is None:
@@ -226,7 +211,7 @@ async def upstream(event):
                 f"`Unfortunately, the directory {error} "
                 "does not seem to be a git repository.\n"
                 "But we can fix that by force updating the userbot using "
-                ".update now.`"
+                ".تحديث الان.`"
             )
         repo = Repo.init()
         origin = repo.create_remote("upstream", off_repo)
@@ -255,84 +240,20 @@ async def upstream(event):
     # Special case for deploy
     if changelog == "" and not force_update:
         await event.edit(
-            "\n`CATUSERBOT is`  **up-to-date**  `with`  "
-            f"**{UPSTREAM_REPO_BRANCH}**\n"
+            "**⌔∮ سورس جمثون محدث الى اخر اصدار **\n"
+            f"**قـنـاة سـورس جـمـثـون** : @JMTHON"
         )
         return repo.__del__()
     if conf == "" and not force_update:
         await print_changelogs(event, ac_br, changelog)
         await event.delete()
-        return await event.respond(
-            f"do `{cmdhd}update deploy` to update the catuserbot"
-        )
+        return await event.respond(f"⌔ : لتحديث سورس جمثون ارسل : `.تحديث الان` ")
 
     if force_update:
         await event.edit(
-            "`Force-Syncing to latest stable userbot code, please wait...`"
+            "- جاري تحديث السورس انتظر قليلا"
         )
-    if conf == "now":
-        await event.edit("`Updating userbot, please wait....`")
+    if conf == "الان":
+        await event.edit("**• جار تحـديـث سـورس جـمثـون انـتـظـر قـليـلا 🔨**")
         await update(event, repo, ups_rem, ac_br)
     return
-
-
-@catub.cat_cmd(
-    pattern="update deploy$",
-)
-async def upstream(event):
-    event = await edit_or_reply(event, "`Pulling the nekopack repo wait a sec ....`")
-    off_repo = "https://github.com/Mr-confused/nekopack"
-    os.chdir("/app")
-    try:
-        txt = "`Oops.. Updater cannot continue due to "
-        txt += "some problems occured`\n\n**LOGTRACE:**\n"
-        repo = Repo()
-    except NoSuchPathError as error:
-        await event.edit(f"{txt}\n`directory {error} is not found`")
-        return repo.__del__()
-    except GitCommandError as error:
-        await event.edit(f"{txt}\n`Early failure! {error}`")
-        return repo.__del__()
-    except InvalidGitRepositoryError:
-        repo = Repo.init()
-        origin = repo.create_remote("upstream", off_repo)
-        origin.fetch()
-        repo.create_head("master", origin.refs.master)
-        repo.heads.master.set_tracking_branch(origin.refs.master)
-        repo.heads.master.checkout(True)
-    try:
-        repo.create_remote("upstream", off_repo)
-    except BaseException:
-        pass
-    ac_br = repo.active_branch.name
-    ups_rem = repo.remote("upstream")
-    ups_rem.fetch(ac_br)
-    await event.edit("`Deploying userbot, please wait....`")
-    await deploy(event, repo, ups_rem, ac_br, txt)
-
-
-@catub.cat_cmd(
-    pattern="badcat$",
-    command=("badcat", plugin_category),
-    info={
-        "header": "To update to badcat( for extra masala and gali).",
-        "usage": "{tr}badcat",
-    },
-)
-async def variable(var):
-    "To update to badcat( for extra masala and gali)."
-    if Config.HEROKU_API_KEY is None:
-        return await edit_delete(
-            var,
-            "Set the required var in heroku to function this normally `HEROKU_API_KEY`.",
-        )
-    if Config.HEROKU_APP_NAME is not None:
-        app = Heroku.app(Config.HEROKU_APP_NAME)
-    else:
-        return await edit_delete(
-            var,
-            "Set the required var in heroku to function this normally `HEROKU_APP_NAME`.",
-        )
-    heroku_var = app.config()
-    await edit_or_reply(var, "`Changing goodcat to badcat wait for 2-3 minutes.`")
-    heroku_var["UPSTREAM_REPO"] = "https://github.com/Jisan09/catuserbot"
