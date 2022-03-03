@@ -74,7 +74,7 @@ async def time_func(tdata):
     else:
         return await edit_or_reply(
             tdata,
-            f"⌯︙الـساعة الآن {dt.now().strftime(t_form)}\n⌯︙تـاريـخ اليوم{dt.now().strftime(d_form)}",
+            f"⌯︙الـساعة الآن {dt.now().strftime(t_form)}\n⌯︙تـاريـخ اليوم {dt.now().strftime(d_form)}",
         )
     if not timezones:
         return await edit_or_reply(tdata, "⌯︙الـبلد غير صالح")
