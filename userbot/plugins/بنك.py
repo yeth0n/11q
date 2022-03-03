@@ -17,7 +17,7 @@ PING_PIC = os.environ.get("PING_PIC") or (
 )
 
 JM_TXT = os.environ.get("PING_TEXT") or "مـن لا يتعلم من الماضي لا يرحمه المستقبل  . 🖤"
-
+plugin_category = "extra"
 
 @jmthon.ar_cmd(
     pattern="بنك$",
