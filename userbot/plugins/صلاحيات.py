@@ -5,9 +5,8 @@ from telethon.tl.functions.channels import EditBannedRequest
 from telethon.tl.functions.messages import EditChatDefaultBannedRightsRequest
 from telethon.tl.functions.messages import ImportChatInviteRequest as Get
 from telethon.tl.types import ChatBannedRights
-from telethon.utils import get_display_name
 
-from userbot import catub
+from userbot import jmthon
 
 from ..core.managers import edit_delete, edit_or_reply
 from ..helpers.utils import _format
@@ -15,52 +14,23 @@ from ..sql_helper.locks_sql import get_locks, is_locked, update_lock
 from ..utils import is_admin
 from . import BOTLOG, get_user_from_event
 
-plugin_category = "admin"
 
+# Copyright (C) 2021 JMTHON TEAM
+# FILES WRITTEN BY  @RR7PP
+plugin_category = "admin" 
 
-@catub.cat_cmd(
-    pattern="lock ([\s\S]*)",
-    command=("lock", plugin_category),
-    info={
-        "header": "To lock the given permission for entire group.",
-        "description": "Db options will lock for admins also,",
-        "api options": {
-            "msg": "To lock messages",
-            "media": "To lock media like videos/photo",
-            "sticker": "To lock stickers",
-            "gif": "To lock gif.",
-            "preview": "To lock link previews.",
-            "game": "To lock games",
-            "inline": "To lock using inline bots",
-            "poll": "To lock sending polls.",
-            "invite": "To lock add users permission",
-            "pin": "To lock pin permission for users",
-            "info": "To lock changing group description",
-            "all": "To lock above all options",
-        },
-        "db options": {
-            "bots": "To lock adding bots by users",
-            "commands": "To lock users using commands",
-            "email": "To lock sending emails",
-            "forward": "To lock forwording messages for group",
-            "url": "To lock sending links to group",
-        },
-        "usage": "{tr}lock <permission>",
-    },
-    groups_only=True,
-    require_admin=True,
-)
+@jmthon.on(admin_cmd(pattern="قفل (.*)"))
 async def _(event):  # sourcery no-metrics
     "To lock the given permission for entire group."
     input_str = event.pattern_match.group(1)
     peer_id = event.chat_id
     if not event.is_group:
-        return await edit_delete(event, "`Idiot! ,This is not a group to lock things `")
+        return await edit_delete(event, "⌔∮ هذه ليست مجموعة لقفل بعض الصلاحيات")
     chat_per = (await event.get_chat()).default_banned_rights
     cat = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
     if input_str in (("bots", "commands", "email", "forward", "url")):
         update_lock(peer_id, input_str, True)
-        await edit_or_reply(event, "`Locked {}`".format(input_str))
+        await edit_or_reply(event, "⌔∮ تـم قفل {} بنجـاح ✅".format(input_str))
     else:
         msg = chat_per.send_messages
         media = chat_per.send_media
@@ -73,86 +43,86 @@ async def _(event):  # sourcery no-metrics
         adduser = chat_per.invite_users
         cpin = chat_per.pin_messages
         changeinfo = chat_per.change_info
-        if input_str == "msg":
+        if input_str == "الدردشه":
             if msg:
                 return await edit_delete(
-                    event, "`This group is already locked with messaging permission`"
+                    event, "⌔∮ المجموعه بالتأكيد مقفولة من الرسائل "
                 )
             msg = True
-            locktype = "messages"
-        elif input_str == "media":
+            locktype = "الدردشه"
+        elif input_str == "الوسائط":
             if media:
                 return await edit_delete(
-                    event, "`This group is already locked with sending media`"
+                    event, "⌔∮ المجمـوعة بالتأكـيد مقفولة من الوسائط ⌁"
                 )
             media = True
-            locktype = "media"
-        elif input_str == "sticker":
+            locktype = "الوسائط"
+        elif input_str == "الملصقات":
             if sticker:
                 return await edit_delete(
-                    event, "`This group is already locked with sending stickers`"
+                    event, "⌔∮ المجمـوعة بالتأكـيد مقفولة من الملصقات ⌁"
                 )
             sticker = True
-            locktype = "stickers"
-        elif input_str == "preview":
+            locktype = "الملصقات"
+        elif input_str == "الروابط":
             if embed_link:
                 return await edit_delete(
-                    event, "`This group is already locked with previewing links`"
+                    event, "⌯︙المجمـوعة بالتأكـيد مقفولة من الروابط ⌁"
                 )
             embed_link = True
-            locktype = "preview links"
-        elif input_str == "gif":
+            locktype = "الروابط"
+        elif input_str == "المتحركه":
             if gif:
                 return await edit_delete(
-                    event, "`This group is already locked with sending GIFs`"
+                    event, "⌔∮ المجمـوعة بالتأكـيد مقفولة من المتحركه ⌁"
                 )
             gif = True
-            locktype = "GIFs"
-        elif input_str == "game":
+            locktype = "المتحركه"
+        elif input_str == "الالعاب":
             if gamee:
                 return await edit_delete(
-                    event, "`This group is already locked with sending games`"
+                    event, "⌔∮ المجمـوعة بالتأكـيد مقفولة من الالعاب ⌁"
                 )
             gamee = True
-            locktype = "games"
-        elif input_str == "inline":
+            locktype = "الالعاب"
+        elif input_str == "الانلاين":
             if ainline:
                 return await edit_delete(
-                    event, "`This group is already locked with using inline bots`"
+                    event, "⌔∮ المجمـوعة بالتأكـيد مقفولة من الانلاين ⌁"
                 )
             ainline = True
-            locktype = "inline bots"
-        elif input_str == "poll":
+            locktype = "الانلاين"
+        elif input_str == "التصويت":
             if gpoll:
                 return await edit_delete(
-                    event, "`This group is already locked with sending polls`"
+                    event, "⌯︙المجمـوعة بالتأكـيد مقفولة من ارسال التصويت ⌁"
                 )
             gpoll = True
-            locktype = "polls"
-        elif input_str == "invite":
+            locktype = "التصويت"
+        elif input_str == "الاضافة":
             if adduser:
                 return await edit_delete(
-                    event, "`This group is already locked with adding members`"
+                    event, "⌯︙المجمـوعة بالتأكـيد مقفولة من اضافه الاعضاء ⌁"
                 )
             adduser = True
-            locktype = "invites"
-        elif input_str == "pin":
+            locktype = "الاضافة"
+        elif input_str == "التثبيت":
             if cpin:
                 return await edit_delete(
                     event,
-                    "`This group is already locked with pinning messages by users`",
+                    "⌯︙المجمـوعة بالتأكـيد مقفولة من تثبيت الرسائل ⌁",
                 )
             cpin = True
-            locktype = "pins"
-        elif input_str == "info":
+            locktype = "التثبيت"
+        elif input_str == "تغيير المعلومات":
             if changeinfo:
                 return await edit_delete(
                     event,
-                    "`This group is already locked with Changing group info by users`",
+                    "⌯︙المجمـوعة بالتأكـيد مقفولة من تغيير معلومات الدردشه ⌁",
                 )
             changeinfo = True
-            locktype = "chat info"
-        elif input_str == "all":
+            locktype = "تغيير المعلومات"
+        elif input_str == "الكل":
             msg = True
             media = True
             sticker = True
@@ -164,14 +134,14 @@ async def _(event):  # sourcery no-metrics
             adduser = True
             cpin = True
             changeinfo = True
-            locktype = "everything"
-        elif input_str:
-            return await edit_delete(
-                event, f"**Invalid lock type :** `{input_str}`", time=5
-            )
-
+            locktype = "الكل"
         else:
-            return await edit_or_reply(event, "`I can't lock nothing !!`")
+            if input_str:
+                return await edit_delete(
+                    event, f"⌯︙هنالك خطأ في الامر : `{input_str}`", time=5
+                )
+
+            return await edit_or_reply(event, "⌯︙لا استطيع قفل شيء")
         try:
             cat = Get(cat)
             await event.client(cat)
@@ -197,58 +167,27 @@ async def _(event):  # sourcery no-metrics
                     peer=peer_id, banned_rights=lock_rights
                 )
             )
-            await edit_or_reply(event, f"`Locked {locktype} for this chat !!`")
+            await edit_or_reply(event, f"⌯︙تـم قفـل  {locktype} بنجـاح ⌁ ")
         except BaseException as e:
             await edit_delete(
                 event,
-                f"`Do I have proper rights for that ??`\n\n**Error:** `{e}`",
+                f"`ليس لديك صلاحيات كافية ??`\n\n**خطأ:** `{str(e)}`",
                 time=5,
             )
 
 
-@catub.cat_cmd(
-    pattern="unlock ([\s\S]*)",
-    command=("unlock", plugin_category),
-    info={
-        "header": "To unlock the given permission for entire group.",
-        "description": "Db options/api options will unlock only if they are locked.",
-        "api options": {
-            "msg": "To unlock messages",
-            "media": "To unlock media like videos/photo",
-            "sticker": "To unlock stickers",
-            "gif": "To unlock gif.",
-            "preview": "To unlock link previews.",
-            "game": "To unlock games",
-            "inline": "To unlock using inline bots",
-            "poll": "To unlock sending polls.",
-            "invite": "To unlock add users permission",
-            "pin": "To unlock pin permission for users",
-            "info": "To unlock changing group description",
-            "all": "To unlock above all options",
-        },
-        "db options": {
-            "bots": "To unlock adding bots by users",
-            "commands": "To unlock users using commands",
-            "email": "To unlock sending emails",
-            "forward": "To unlock forwording messages for group",
-            "url": "To unlock sending links to group",
-        },
-        "usage": "{tr}unlock <permission>",
-    },
-    groups_only=True,
-    require_admin=True,
-)
+@jmthon.on(admin_cmd(pattern="فتح (.*)")) 
 async def _(event):  # sourcery no-metrics
     "To unlock the given permission for entire group."
     input_str = event.pattern_match.group(1)
     peer_id = event.chat_id
     if not event.is_group:
-        return await edit_delete(event, "`Idiot! ,This is not a group to lock things `")
+        return await edit_delete(event, "⌯︙هذه ليست مجموعة قفل بعض الصلاحيات")
     cat = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
     chat_per = (await event.get_chat()).default_banned_rights
     if input_str in (("bots", "commands", "email", "forward", "url")):
         update_lock(peer_id, input_str, False)
-        await edit_or_reply(event, "`UnLocked {}`".format(input_str))
+        await edit_or_reply(event, "⌯︙تـم فتح {} بنجـاح ✅".format(input_str))
     else:
         msg = chat_per.send_messages
         media = chat_per.send_media
@@ -261,86 +200,82 @@ async def _(event):  # sourcery no-metrics
         adduser = chat_per.invite_users
         cpin = chat_per.pin_messages
         changeinfo = chat_per.change_info
-        if input_str == "msg":
+        if input_str == "الدردشه":
             if not msg:
-                return await edit_delete(
-                    event, "`This group is already unlocked with messaging permission`"
-                )
+                return await edit_delete(event, "⌯︙الدردشه مفتوحه في هذه المجموعه ⌁")
             msg = False
-            locktype = "messages"
-        elif input_str == "media":
+            locktype = "الدردشه"
+        elif input_str == "الوسائط":
             if not media:
-                return await edit_delete(
-                    event, "`This group is already unlocked with sending media`"
-                )
+                return await edit_delete(event, "⌯︙ارسال الوسائط مسموح في هذه الدردشه")
             media = False
-            locktype = "media"
-        elif input_str == "sticker":
+            locktype = "الوسائط"
+        elif input_str == "الملصقات":
             if not sticker:
                 return await edit_delete(
-                    event, "`This group is already unlocked with sending stickers`"
+                    event, "⌯︙ارسال المصقات مسموح في هذه الدردشه ⌁"
                 )
             sticker = False
-            locktype = "stickers"
-        elif input_str == "preview":
+            locktype = "الملصقات"
+        elif input_str == "الروابط":
             if not embed_link:
                 return await edit_delete(
-                    event, "`This group is already unlocked with preview links`"
+                    event, "⌯︙ارسال الروابط مسموح في هذه الدردشه ⌁"
                 )
             embed_link = False
-            locktype = "preview links"
-        elif input_str == "gif":
+            locktype = "الروابط"
+        elif input_str == "المتحركه":
             if not gif:
                 return await edit_delete(
-                    event, "`This group is already unlocked with sending GIFs`"
+                    event, "⌯︙ارسال المتحركه مسموح في هذه الدردشه ⌁"
                 )
             gif = False
-            locktype = "GIFs"
-        elif input_str == "game":
+            locktype = "المتحركه"
+        elif input_str == "الالعاب":
             if not gamee:
                 return await edit_delete(
-                    event, "`This group is already unlocked with sending games`"
+                    event, "⌯︙ارسال الالعاب مسموح في هذه الدردشه ⌁"
                 )
             gamee = False
-            locktype = "games"
-        elif input_str == "inline":
+            locktype = "الالعاب"
+        elif input_str == "الانلاين":
             if not ainline:
                 return await edit_delete(
-                    event, "`This group is already unlocked with using inline bots`"
+                    event, "⌯︙ارسال الانلاين مسموح في هذه الدردشه ⌁"
                 )
             ainline = False
-            locktype = "inline bots"
-        elif input_str == "poll":
+            locktype = "الانلاين"  # BY  @RR7PP  -  @UUNZZ
+        elif input_str == "التصويت":
             if not gpoll:
                 return await edit_delete(
-                    event, "`This group is already unlocked with sending polls`"
+                    event, "⌯︙ارسال التصويت مسموح في هذه الدردشه ⌁ "
                 )
             gpoll = False
-            locktype = "polls"
-        elif input_str == "invite":
+            locktype = "التصويت"
+        elif input_str == "الاضافة":
             if not adduser:
                 return await edit_delete(
-                    event, "`This group is already unlocked with adding members`"
+                    event, "⌯︙اضافة الاعضاء مسموح في هذه الدردشه ⌁"
                 )
             adduser = False
-            locktype = "invites"
-        elif input_str == "pin":
+            locktype = "الاضافة"
+        elif input_str == "التثبيت":
             if not cpin:
                 return await edit_delete(
                     event,
-                    "`This group is already unlocked with pinning messages by users`",
+                    "⌯︙تثبيت الرسائل مسموح في هذه الدردشه ⌁",
                 )
             cpin = False
-            locktype = "pins"
-        elif input_str == "info":
+            locktype = "التثبيت"
+        elif input_str == "تغيير المعلومات":
             if not changeinfo:
                 return await edit_delete(
                     event,
-                    "`This group is already unlocked with Changing grup info by users`",
+                    "⌯︙تغيير معلومات الدردشه مسموح في هذه الدردشه ⌁",
                 )
             changeinfo = False
-            locktype = "chat info"
-        elif input_str == "all":
+            locktype = "تغيير المعلومات"
+        elif input_str == "الكل":
             msg = False
             media = False
             sticker = False
@@ -352,14 +287,14 @@ async def _(event):  # sourcery no-metrics
             adduser = False
             cpin = False
             changeinfo = False
-            locktype = "everything"
-        elif input_str:
-            return await edit_delete(
-                event, f"**Invalid unlock type :** `{input_str}`", time=5
-            )
-
+            locktype = "الكل"
         else:
-            return await edit_or_reply(event, "`I can't unlock nothing !!`")
+            if input_str:
+                return await edit_delete(
+                    event, f"⌯︙خطأ في فتح الامر : `{input_str}`", time=5
+                )
+
+            return await edit_or_reply(event, "`لا يمكنني فتح اي شي !!`")
         try:
             cat = Get(cat)
             await event.client(cat)
@@ -385,76 +320,70 @@ async def _(event):  # sourcery no-metrics
                     peer=peer_id, banned_rights=unlock_rights
                 )
             )
-            await edit_or_reply(event, f"`Unlocked {locktype} for this chat !!`")
+            await edit_or_reply(event, f"⌯︙تـم فتـح  {locktype} بنجاح ⌁ ")
         except BaseException as e:
             return await edit_delete(
                 event,
-                f"`Do I have proper rights for that ??`\n\n**Error:** `{e}`",
+                f"⌯︙ليس لديك صلاحيات كافيه ??\n\n**خطأ:** `{str(e)}`",
                 time=5,
             )
 
 
-@catub.cat_cmd(
-    pattern="locks$",
-    command=("locks", plugin_category),
-    info={
-        "header": "To see the active locks in the current group",
-        "usage": "{tr}locks",
-    },
-    groups_only=True,
-)
+# BY  @RR7PP  -  @UUNZZ
+@jmthon.on(admin_cmd(pattern="الصلاحيات$")) 
 async def _(event):  # sourcery no-metrics
     "To see the active locks in the current group"
     res = ""
     current_db_locks = get_locks(event.chat_id)
     if not current_db_locks:
-        res = "There are no DataBase settings in this chat"
+        res = "لا توجد معلومات كافيه في هذه الدردشه"
     else:
-        res = "Following are the DataBase permissions in this chat: \n"
-        ubots = "❌" if current_db_locks.bots else "✅"
-        ucommands = "❌" if current_db_locks.commands else "✅"
-        uemail = "❌" if current_db_locks.email else "✅"
-        uforward = "❌" if current_db_locks.forward else "✅"
-        uurl = "❌" if current_db_locks.url else "✅"
-        res += f"👉 `bots`: `{ubots}`\n"
-        res += f"👉 `commands`: `{ucommands}`\n"
-        res += f"👉 `email`: `{uemail}`\n"
-        res += f"👉 `forward`: `{uforward}`\n"
-        res += f"👉 `url`: `{uurl}`\n"
+        res = "⌯︙ملـف الاوامر مقدم من سورس جمثـون: \n"
+        ubots = "✗" if current_db_locks.bots else "✔"
+        ucommands = "✗" if current_db_locks.commands else "✔"
+        "✗" if current_db_locks.email else "✔"
+        uforward = "✗" if current_db_locks.forward else "✔"
+        uurl = "✗" if current_db_locks.url else "✔"
+        res += f" البـوتات ☣️: `{ubots}`\n"
+        res += f" الاوامـر ⚒️ : `{ucommands}`\n"
+        res += f" الايـميل 📬: {mail}`\n"
+        res += f" التـحويل ➡️: `{uforward}`\n"
+        res += f" الـرابط  🔗: `{uurl}`\n"
     current_chat = await event.get_chat()
     try:
         chat_per = current_chat.default_banned_rights
     except AttributeError as e:
         logger.info(str(e))
     else:
-        umsg = "❌" if chat_per.send_messages else "✅"
-        umedia = "❌" if chat_per.send_media else "✅"
-        usticker = "❌" if chat_per.send_stickers else "✅"
-        ugif = "❌" if chat_per.send_gifs else "✅"
-        ugamee = "❌" if chat_per.send_games else "✅"
-        uainline = "❌" if chat_per.send_inline else "✅"
-        uembed_link = "❌" if chat_per.embed_links else "✅"
-        ugpoll = "❌" if chat_per.send_polls else "✅"
-        uadduser = "❌" if chat_per.invite_users else "✅"
-        ucpin = "❌" if chat_per.pin_messages else "✅"
-        uchangeinfo = "❌" if chat_per.change_info else "✅"
-        res += "\nThis are current permissions of this chat: \n"
-        res += f"👉 `msg`: `{umsg}`\n"
-        res += f"👉 `media`: `{umedia}`\n"
-        res += f"👉 `sticker`: `{usticker}`\n"
-        res += f"👉 `gif`: `{ugif}`\n"
-        res += f"👉 `preview`: `{uembed_link}`\n"
-        res += f"👉 `gamee`: `{ugamee}`\n"
-        res += f"👉 `ainline`: `{uainline}`\n"
-        res += f"👉 `gpoll`: `{ugpoll}`\n"
-        res += f"👉 `adduser`: `{uadduser}`\n"
-        res += f"👉 `cpin`: `{ucpin}`\n"
-        res += f"👉 `changeinfo`: `{uchangeinfo}`\n"
+        umsg = "✗" if chat_per.send_messages else "✔"
+        umedia = "✗" if chat_per.send_media else "✔"
+        usticker = "✗" if chat_per.send_stickers else "✔"
+        ugif = "✗" if chat_per.send_gifs else "✔"
+        ugamee = "✗" if chat_per.send_games else "✔"
+        uainline = "✗" if chat_per.send_inline else "✔"
+        uembed_link = "✗" if chat_per.embed_links else "✔"
+        ugpoll = "✗" if chat_per.send_polls else "✔"
+        uadduser = "✗" if chat_per.invite_users else "✔"
+        ucpin = "✗" if chat_per.pin_messages else "✔"
+        uchangeinfo = "✗" if chat_per.change_info else "✔"
+        res += "\n⌯︙هذه الصلاحيات الموجوده في هذه الدردشه : \n\n"
+        res += f" ⌯︙ارسال الرسائل: `{umsg}`\n"
+        res += f" ⌯︙ارسال الوسائط: `{umedia}`\n"
+        res += f" ⌯︙ارسال الملصقات: `{usticker}`\n"
+        res += f" ⌯︙ارسال المتحركه: `{ugif}`\n"
+        res += f" ⌯︙ارسال الروابط: `{uembed_link}`\n"
+        res += f" ⌯︙ارسال الالعاب: `{ugamee}`\n"
+        res += f" ⌯︙ارسال الانلاين: `{uainline}`\n"
+        res += f" ⌯︙ارسال التصويت: `{ugpoll}`\n"
+        res += f" ⌯︙اضافه الاعضاء: `{uadduser}`\n"
+        res += f" ⌯︙تثبيت الرسائل: `{ucpin}`\n"
+        res += f" ⌯︙تغيير معلومات الدردشه: `{uchangeinfo}`\n"
+    await edit_or_reply(event, res)
     await edit_or_reply(event, res)
 
 
-@catub.cat_cmd(
-    pattern="plock ([\s\S]*)",
+@jmthon.ar_cmd(
+    pattern="plock (.*)",
     command=("plock", plugin_category),
     info={
         "header": "To lock the given permission for replied person only.",
@@ -483,7 +412,9 @@ async def _(event):  # sourcery no-metrics
     peer_id = event.chat_id
     reply = await event.get_reply_message()
     chat_per = (await event.get_chat()).default_banned_rights
-    result = await event.client.get_permissions(peer_id, reply.from_id)
+    result = await event.client(
+        functions.channels.GetParticipantRequest(peer_id, reply.from_id)
+    )
     admincheck = await is_admin(event.client, peer_id, reply.from_id)
     if admincheck:
         return await edit_delete(event, "`This user is admin you cant play with him`")
@@ -661,12 +592,12 @@ async def _(event):  # sourcery no-metrics
         ucpin = True
         uchangeinfo = True
         locktype = "everything"
-    elif input_str:
-        return await edit_delete(
-            event, f"**Invalid lock type :** `{input_str}`", time=5
-        )
-
     else:
+        if input_str:
+            return await edit_delete(
+                event, f"**Invalid lock type : `{input_str}`", time=5
+            )
+
         return await edit_or_reply(event, "`I can't lock nothing !!`")
     try:
         cat = Get(cat)
@@ -693,13 +624,13 @@ async def _(event):  # sourcery no-metrics
     except BaseException as e:
         await edit_delete(
             event,
-            f"`Do I have proper rights for that ??`\n\n**Error:** `{e}`",
+            f"`Do I have proper rights for that ??`\n\n**Error:** `{str(e)}`",
             time=5,
         )
 
 
-@catub.cat_cmd(
-    pattern="punlock ([\s\S]*)",
+@jmthon.ar_cmd(
+    pattern="punlock (.*)",
     command=("punlock", plugin_category),
     info={
         "header": "To unlock the given permission for replied person only.",
@@ -729,7 +660,9 @@ async def _(event):  # sourcery no-metrics
     peer_id = event.chat_id
     reply = await event.get_reply_message()
     chat_per = (await event.get_chat()).default_banned_rights
-    result = await event.client.get_permissions(peer_id, reply.from_id)
+    result = await event.client(
+        functions.channels.GetParticipantRequest(peer_id, reply.from_id)
+    )
     admincheck = await is_admin(event.client, peer_id, reply.from_id)
     if admincheck:
         return await edit_delete(event, "`This user is admin you cant play with him`")
@@ -910,12 +843,12 @@ async def _(event):  # sourcery no-metrics
         if not changeinfo:
             uchangeinfo = False
         locktype = "everything"
-    elif input_str:
-        return await edit_delete(
-            event, f"**Invalid lock type :** `{input_str}`", time=5
-        )
-
     else:
+        if input_str:
+            return await edit_delete(
+                event, f"**Invalid lock type :** `{input_str}`", time=5
+            )
+
         return await edit_or_reply(event, "`I can't lock nothing !!`")
     try:
         cat = Get(cat)
@@ -942,13 +875,13 @@ async def _(event):  # sourcery no-metrics
     except BaseException as e:
         await edit_delete(
             event,
-            f"`Do I have proper rights for that ??`\n\n**Error:** `{e}`",
+            f"`Do I have proper rights for that ??`\n\n**Error:** `{str(e)}`",
             time=5,
         )
 
 
-@catub.cat_cmd(
-    pattern="uperm(?:\s|$)([\s\S]*)",
+@jmthon.ar_cmd(
+    pattern="uperm(?: |$)(.*)",
     command=("uperm", plugin_category),
     info={
         "header": "To get permissions of replied user or mentioned user in that group.",
@@ -963,7 +896,9 @@ async def _(event):  # sourcery no-metrics
     if not user:
         return
     admincheck = await is_admin(event.client, peer_id, user.id)
-    result = await event.client.get_permissions(peer_id, user.id)
+    result = await event.client(
+        functions.channels.GetParticipantRequest(peer_id, user.id)
+    )
     output = ""
     if admincheck:
         c_info = "✅" if result.participant.admin_rights.change_info else "❌"
@@ -973,7 +908,7 @@ async def _(event):  # sourcery no-metrics
         pin = "✅" if result.participant.admin_rights.pin_messages else "❌"
         add_a = "✅" if result.participant.admin_rights.add_admins else "❌"
         call = "✅" if result.participant.admin_rights.manage_call else "❌"
-        output += f"**Admin rights of **{_format.mentionuser(user.first_name ,user.id)} **in {get_display_name(await event.get_chat())} chat are **\n"
+        output += f"**Admin rights of **{_format.mentionuser(user.first_name ,user.id)} **in {event.chat.title} chat are **\n"
         output += f"__Change info :__ {c_info}\n"
         output += f"__Delete messages :__ {del_me}\n"
         output += f"__Ban users :__ {ban}\n"
@@ -1007,7 +942,7 @@ async def _(event):  # sourcery no-metrics
             uadduser = "❌" if chat_per.invite_users else "✅"
             ucpin = "❌" if chat_per.pin_messages else "✅"
             uchangeinfo = "❌" if chat_per.change_info else "✅"
-        output += f"{_format.mentionuser(user.first_name ,user.id)} **permissions in {get_display_name(await event.get_chat())} chat are **\n"
+        output += f"{_format.mentionuser(user.first_name ,user.id)} **permissions in {event.chat.title} chat are **\n"
         output += f"__Send Messages :__ {umsg}\n"
         output += f"__Send Media :__ {umedia}\n"
         output += f"__Send Stickers :__ {usticker}\n"
@@ -1022,7 +957,7 @@ async def _(event):  # sourcery no-metrics
     await edit_or_reply(event, output)
 
 
-@catub.cat_cmd(incoming=True, forword=None)
+@jmthon.ar_cmd(incoming=True)
 async def check_incoming_messages(event):  # sourcery no-metrics
     if not event.is_private:
         chat = await event.get_chat()
@@ -1088,7 +1023,7 @@ async def check_incoming_messages(event):  # sourcery no-metrics
                 update_lock(peer_id, "url", False)
 
 
-@catub.on(events.ChatAction())
+@jmthon.on(events.ChatAction())
 async def _(event):
     if not event.is_private:
         chat = await event.get_chat()
@@ -1130,3 +1065,6 @@ async def _(event):
                     users_added_by
                 )
             )
+
+
+# THIS FILE WRITTEN BY  @RR7PP
