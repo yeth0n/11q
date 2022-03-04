@@ -1,13 +1,13 @@
 from asyncio import sleep
 
-from userbot import catub
+from userbot import jmthon
 
 plugin_category = "utils"
 
 
-@catub.cat_cmd(
-    pattern="schd (\d*) ([\s\S]*)",
-    command=("schd", plugin_category),
+@jmthon.cat_cmd(
+    pattern="مؤقتا (\d*) ([\s\S]*)",
+    command=("مؤقتا", plugin_category),
     info={
         "header": "To schedule a message after given time(in seconds).",
         "usage": "{tr}schd <time_in_seconds>  <message to send>",
@@ -16,9 +16,9 @@ plugin_category = "utils"
 )
 async def _(event):
     "To schedule a message after given time"
-    cat = ("".join(event.text.split(maxsplit=1)[1:])).split(" ", 1)
-    message = cat[1]
-    ttl = int(cat[0])
+    jmthon = ("".join(event.text.split(maxsplit=1)[1:])).split(" ", 1)
+    message = jmthon[1]
+    ttl = int(jmthon[0])
     await event.delete()
     await sleep(ttl)
     await event.respond(message)
