@@ -5,7 +5,7 @@ from userbot import jmthon
 plugin_category = "utils"
 
 
-@jmthon.cat_cmd(
+@jmthon.ar_cmd(
     pattern="مؤقتا (\d*) ([\s\S]*)",
     command=("مؤقتا", plugin_category),
     info={
