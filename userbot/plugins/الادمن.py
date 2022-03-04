@@ -345,7 +345,7 @@ async def watcher(event):
 async def startmute(event):
     "- لكتم شخص في الدردشة"
     if event.is_private:
-        await event.edit("**- لقد حدث خطا ما**")
+        await event.edit("**- ربما ستحدث بعض المشاكل والاخطاء**")
         await sleep(2)
         await event.get_reply_message()
         replied_user = await event.client(GetFullUserRequest(event.chat_id))
@@ -414,13 +414,13 @@ async def startmute(event):
         if reason:
             await edit_or_reply(
                 event,
-                f"{_format.mentionuser(user.first_name ,user.id)} **تم كتمه بنجاح في {get_display_name(await event.get_chat())}**\n"
+                f"المستخدم {_format.mentionuser(user.first_name ,user.id)}\n**تم كتمه بنجاح\nالدردشة {get_display_name(await event.get_chat())}**\n"
                 f"**السبب:**{reason}",
             )
         else:
             await edit_or_reply(
                 event,
-                f"{_format.mentionuser(user.first_name ,user.id)} **تم كتمه بنجاح في {get_display_name(await event.get_chat())}**\n",
+                f"المستخدم {_format.mentionuser(user.first_name ,user.id)}\n**تم كتمه بنجاح\nالدردشة {get_display_name(await event.get_chat())}**\n"
             )
         if BOTLOG:
             await event.client.send_message(
@@ -447,7 +447,7 @@ async def startmute(event):
 async def endmute(event):
     "- الالغاء كتم شخص في الدردشة "
     if event.is_private:
-        await event.edit("**- لقد حدث خطا ما**")
+        await event.edit("**- ربما ستحدث بعض المشاكل والاخطاء**")
         await sleep(1)
         replied_user = await event.client(GetFullUserRequest(event.chat_id))
         if not is_muted(event.chat_id, event.chat_id):
@@ -466,7 +466,7 @@ async def endmute(event):
             await event.client.send_message(
                 BOTLOG_CHATID,
                 "#الغاء_كتم\n"
-                f"**المستخدم :** [{replied_user.user.first_name}](tg://user?id={event.chat_id})\n",
+                f"**المستخدم** [{replied_user.user.first_name}](tg://user?id={event.chat_id})\n",
             )
     else:
         user, _ = await get_user_from_event(event)
@@ -490,7 +490,7 @@ async def endmute(event):
             return await edit_or_reply(event, f"**خطا : ****{e}**")
         await edit_or_reply(
             event,
-            f"{_format.mentionuser(user.first_name ,user.id)} **تم الغاء كتمه في {get_display_name(await event.get_chat())}**",
+            f"المستخدم {_format.mentionuser(user.first_name ,user.id)}\n**تم الغاء كتمه ✓ \nالدردشة {get_display_name(await event.get_chat())}**",
         )
         if BOTLOG:
             await event.client.send_message(
