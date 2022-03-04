@@ -20,7 +20,7 @@ from telethon.tl.types import (
 )
 from telethon.utils import get_display_name
 
-from userbot import catub
+from userbot import jmthon
 
 from ..core.logger import logging
 from ..core.managers import edit_delete, edit_or_reply
@@ -30,12 +30,12 @@ from ..sql_helper.mute_sql import is_muted, mute, unmute
 from . import BOTLOG, BOTLOG_CHATID
 
 # =================== STRINGS ============
-PP_TOO_SMOL = "`The image is too small`"
-PP_ERROR = "`Failure while processing the image`"
-NO_ADMIN = "`I am not an admin nub nibba!`"
-NO_PERM = "`I don't have sufficient permissions! This is so sed. Alexa play despacito`"
-CHAT_PP_CHANGED = "`Chat Picture Changed`"
-INVALID_MEDIA = "`Invalid Extension`"
+PP_TOO_SMOL = "**- الصورة صغيرة جدا**"
+PP_ERROR = "**فشل اثناء معالجة الصورة**"
+NO_ADMIN = "**- عذرا انا لست مشرف هنا**"
+NO_PERM = "**- ليست لدي صلاحيات كافيه في هذه الدردشة**"
+CHAT_PP_CHANGED = "**- تم تغيير صورة الدردشة**"
+INVALID_MEDIA = "**- ابعاد الصورة غير صالحة**"
 
 BANNED_RIGHTS = ChatBannedRights(
     until_date=None,
@@ -68,8 +68,8 @@ plugin_category = "admin"
 # ================================================
 
 
-@catub.cat_cmd(
-    pattern="gpic( -s| -d)$",
+@jmthon.ar_cmd(
+    pattern="الصورة( -وضع| -حذف)$",
     command=("gpic", plugin_category),
     info={
         "header": "For changing group display pic or deleting display pic",
@@ -89,7 +89,7 @@ plugin_category = "admin"
 async def set_group_photo(event):  # sourcery no-metrics
     "For changing Group dp"
     flag = (event.pattern_match.group(1)).strip()
-    if flag == "-s":
+    if flag == "-وضع":
         replymsg = await event.get_reply_message()
         photo = None
         if replymsg and replymsg.media:
@@ -112,27 +112,27 @@ async def set_group_photo(event):  # sourcery no-metrics
             except ImageProcessFailedError:
                 return await edit_delete(event, PP_ERROR)
             except Exception as e:
-                return await edit_delete(event, f"**Error : **`{str(e)}`")
-            process = "updated"
+                return await edit_delete(event, f"**خطأ : **`{str(e)}`")
+            process = "- تم تحديثها"
     else:
         try:
             await event.client(EditPhotoRequest(event.chat_id, InputChatPhotoEmpty()))
         except Exception as e:
-            return await edit_delete(event, f"**Error : **`{e}`")
-        process = "deleted"
-        await edit_delete(event, "```successfully group profile pic deleted.```")
+            return await edit_delete(event, f"**خطأ : **`{e}`")
+        process = "- تم حذفها "
+        await edit_delete(event, "***- تم حذف صورة الكروب بنجاح***")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
-            "#GROUPPIC\n"
-            f"Group profile pic {process} successfully "
-            f"CHAT: {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
+            "#صورة_الكروب\n"
+            f"- صورة الكروب تم {process} بنجاح "
+            f"الدردشة : {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
         )
 
 
-@catub.cat_cmd(
-    pattern="promote(?:\s|$)([\s\S]*)",
-    command=("promote", plugin_category),
+@jmthon.ar_cmd(
+    pattern="رفع مشرف(?:\s|$)([\s\S]*)",
+    command=("رفع مشرف", plugin_category),
     info={
         "header": "To give admin rights for a person",
         "description": "Provides admin rights to the person in the chat\
@@ -157,26 +157,26 @@ async def promote(event):
     )
     user, rank = await get_user_from_event(event)
     if not rank:
-        rank = "Admin"
+        rank = "ادمن"
     if not user:
         return
-    catevent = await edit_or_reply(event, "`Promoting...`")
+    rozevent = await edit_or_reply(event, "**- يتم الرفع **")
     try:
         await event.client(EditAdminRequest(event.chat_id, user.id, new_rights, rank))
     except BadRequestError:
-        return await catevent.edit(NO_PERM)
-    await catevent.edit("`Promoted Successfully! Now gib Party`")
+        return await rozevent.edit(NO_PERM)
+    await rozevent.edit("**- تم الرفع بنجاح**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
-            f"#PROMOTE\
-            \nUSER: [{user.first_name}](tg://user?id={user.id})\
-            \nCHAT: {get_display_name(await event.get_chat())} (`{event.chat_id}`)",
+            f"#رفع_مشرف \
+            \nالمستخدم: [{user.first_name}](tg://user?id={user.id})\
+            \nالدردشة: {get_display_name(await event.get_chat())} (**{event.chat_id}**)",
         )
 
 
-@catub.cat_cmd(
-    pattern="demote(?:\s|$)([\s\S]*)",
+@jmthon.ar_cmd(
+    pattern="تنزيل مشرف(?:\s|$)([\s\S]*)",
     command=("demote", plugin_category),
     info={
         "header": "To remove a person from admin list",
@@ -191,11 +191,11 @@ async def promote(event):
     require_admin=True,
 )
 async def demote(event):
-    "To demote a person in group"
+    "- تنزيل رتبة شخص في المجموعة"
     user, _ = await get_user_from_event(event)
     if not user:
         return
-    catevent = await edit_or_reply(event, "`Demoting...`")
+    rozevent = await edit_or_reply(event, "**- جاري تنزيل الشخص**")
     newrights = ChatAdminRights(
         add_admins=None,
         invite_users=None,
@@ -204,23 +204,23 @@ async def demote(event):
         delete_messages=None,
         pin_messages=None,
     )
-    rank = "admin"
+    rank = "ادمن"
     try:
         await event.client(EditAdminRequest(event.chat_id, user.id, newrights, rank))
     except BadRequestError:
-        return await catevent.edit(NO_PERM)
-    await catevent.edit("`Demoted Successfully! Betterluck next time`")
+        return await rozevent.edit(NO_PERM)
+    await rozevent.edit("**- تم تنزيل المشرف بنجاح**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
-            f"#DEMOTE\
-            \nUSER: [{user.first_name}](tg://user?id={user.id})\
-            \nCHAT: {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
+            f"#تنزيل_مشرف\
+            \nالمستخدم: [{user.first_name}](tg://user?id={user.id})\
+            \nالدردشه: {get_display_name(await event.get_chat())}(**{event.chat_id}**)",
         )
 
 
-@catub.cat_cmd(
-    pattern="ban(?:\s|$)([\s\S]*)",
+@jmthon.ar_cmd(
+    pattern="حظر(?:\s|$)([\s\S]*)",
     command=("ban", plugin_category),
     info={
         "header": "Will ban the guy in the group where you used this command.",
@@ -235,53 +235,53 @@ async def demote(event):
     require_admin=True,
 )
 async def _ban_person(event):
-    "To ban a person in group"
+    "- لحظر شخص في المجموعة"
     user, reason = await get_user_from_event(event)
     if not user:
         return
     if user.id == event.client.uid:
-        return await edit_delete(event, "__You cant ban yourself.__")
-    catevent = await edit_or_reply(event, "`Whacking the pest!`")
+        return await edit_delete(event, "**- لا تستطيع حظر نفسك**")
+    rozevent = await edit_or_reply(event, "**- تم حظرة بنجاح**")
     try:
         await event.client(EditBannedRequest(event.chat_id, user.id, BANNED_RIGHTS))
     except BadRequestError:
-        return await catevent.edit(NO_PERM)
+        return await rozevent.edit(NO_PERM)
     try:
         reply = await event.get_reply_message()
         if reply:
             await reply.delete()
     except BadRequestError:
-        return await catevent.edit(
-            "`I dont have message nuking rights! But still he is banned!`"
+        return await rozevent.edit(
+            "**- ليست لدي صلاحيات كافيه لكنه ما زال محظور**"
         )
     if reason:
-        await catevent.edit(
-            f"{_format.mentionuser(user.first_name ,user.id)}` is banned !!`\n**Reason : **`{reason}`"
+        await rozevent.edit(
+            f"{_format.mentionuser(user.first_name ,user.id)}** تم حظره !!**\n**السبب : ****{reason}**"
         )
     else:
-        await catevent.edit(
-            f"{_format.mentionuser(user.first_name ,user.id)} `is banned !!`"
+        await rozevent.edit(
+            f"{_format.mentionuser(user.first_name ,user.id)} **تم حظره !!**"
         )
     if BOTLOG:
         if reason:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                f"#BAN\
-                \nUSER: [{user.first_name}](tg://user?id={user.id})\
-                \nCHAT: {get_display_name(await event.get_chat())}(`{event.chat_id}`)\
-                \nREASON : {reason}",
+                f"#حظر\
+                \nالمستخدم: [{user.first_name}](tg://user?id={user.id})\
+                \nالدردشة: {get_display_name(await event.get_chat())}(**{event.chat_id}**)\
+                \nالسبب : {reason}",
             )
         else:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                f"#BAN\
+                f"#حظر\
                 \nUSER: [{user.first_name}](tg://user?id={user.id})\
-                \nCHAT: {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
+                \nالدردشة: {get_display_name(await event.get_chat())}(**{event.chat_id}**)",
             )
 
 
-@catub.cat_cmd(
-    pattern="unban(?:\s|$)([\s\S]*)",
+@jmthon.ar_cmd(
+    pattern="الغاء حظر(?:\s|$)([\s\S]*)",
     command=("unban", plugin_category),
     info={
         "header": "Will unban the guy in the group where you used this command.",
@@ -296,30 +296,30 @@ async def _ban_person(event):
     require_admin=True,
 )
 async def nothanos(event):
-    "To unban a person"
+    "- لالغاء حظر شخص"
     user, _ = await get_user_from_event(event)
     if not user:
         return
-    catevent = await edit_or_reply(event, "`Unbanning...`")
+    rozevent = await edit_or_reply(event, "**- جاري الغاء حظر المستخدم**")
     try:
         await event.client(EditBannedRequest(event.chat_id, user.id, UNBAN_RIGHTS))
-        await catevent.edit(
-            f"{_format.mentionuser(user.first_name ,user.id)} `is Unbanned Successfully. Granting another chance.`"
+        await rozevent.edit(
+            f"{_format.mentionuser(user.first_name ,user.id)} **- تم الغاء حظر المستخدم**"
         )
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                "#UNBAN\n"
-                f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-                f"CHAT: {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
+                "#الغاء_الحظر\n"
+                f"المستخدم: [{user.first_name}](tg://user?id={user.id})\n"
+                f"الدردشة: {get_display_name(await event.get_chat())}(**{event.chat_id}**)",
             )
     except UserIdInvalidError:
-        await catevent.edit("`Uh oh my unban logic broke!`")
+        await rozevent.edit("**- عذرا حدث خطا اثناء الغاء الحظر**")
     except Exception as e:
-        await catevent.edit(f"**Error :**\n`{e}`")
+        await rozevent.edit(f"**خطأ :**\n**{e}**")
 
 
-@catub.cat_cmd(incoming=True)
+@jmthon.ar_cmd(incoming=True)
 async def watcher(event):
     if is_muted(event.sender_id, event.chat_id):
         try:
@@ -328,9 +328,9 @@ async def watcher(event):
             LOGS.info(str(e))
 
 
-@catub.cat_cmd(
-    pattern="mute(?:\s|$)([\s\S]*)",
-    command=("mute", plugin_category),
+@jmthon.ar_cmd(
+    pattern="كتم(?:\s|$)([\s\S]*)",
+    command=("كتم", plugin_category),
     info={
         "header": "To stop sending messages from that user",
         "description": "If is is not admin then changes his permission in group,\
@@ -343,29 +343,29 @@ async def watcher(event):
     },  # sourcery no-metrics
 )
 async def startmute(event):
-    "To mute a person in that paticular chat"
+    "- لكتم شخص في الدردشة"
     if event.is_private:
-        await event.edit("`Unexpected issues or ugly errors may occur!`")
+        await event.edit("**- لقد حدث خطا ما**")
         await sleep(2)
         await event.get_reply_message()
         replied_user = await event.client(GetFullUserRequest(event.chat_id))
         if is_muted(event.chat_id, event.chat_id):
             return await event.edit(
-                "`This user is already muted in this chat ~~lmfao sed rip~~`"
+                "**- الشخص مكتوم بالاصل**"
             )
-        if event.chat_id == catub.uid:
-            return await edit_delete(event, "`You cant mute yourself`")
+        if event.chat_id == jmthon.uid:
+            return await edit_delete(event, "**- عذرا لا يمكنك كتم نفسك**")
         try:
             mute(event.chat_id, event.chat_id)
         except Exception as e:
-            await event.edit(f"**Error **\n`{e}`")
+            await event.edit(f"**خطأ **\n**{e}**")
         else:
-            await event.edit("`Successfully muted that person.\n**｀-´)⊃━☆ﾟ.*･｡ﾟ **`")
+            await event.edit("**- تم كتم الشخص بنجاح\n**｀-´)⊃━☆ﾟ.*･｡ﾟ ****")
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                "#PM_MUTE\n"
-                f"**User :** [{replied_user.user.first_name}](tg://user?id={event.chat_id})\n",
+                "#الكتم\n"
+                f"**المستخدم :** [{replied_user.user.first_name}](tg://user?id={event.chat_id})\n",
             )
     else:
         chat = await event.get_chat()
@@ -373,28 +373,28 @@ async def startmute(event):
         creator = chat.creator
         if not admin and not creator:
             return await edit_or_reply(
-                event, "`You can't mute a person without admin rights niqq.` ಥ﹏ಥ  "
+                event, "**- عذرا انا لست مشرف هنا**  "
             )
         user, reason = await get_user_from_event(event)
         if not user:
             return
-        if user.id == catub.uid:
-            return await edit_or_reply(event, "`Sorry, I can't mute myself`")
+        if user.id == jmthon.uid:
+            return await edit_or_reply(event, "**- اسف لايمكنك كتم نفسك**")
         if is_muted(user.id, event.chat_id):
             return await edit_or_reply(
-                event, "`This user is already muted in this chat ~~lmfao sed rip~~`"
+                event, "**- هذا الشخص مكتوم بالاصل**"
             )
         result = await event.client.get_permissions(event.chat_id, user.id)
         try:
             if result.participant.banned_rights.send_messages:
                 return await edit_or_reply(
                     event,
-                    "`This user is already muted in this chat ~~lmfao sed rip~~`",
+                     "**- هذا الشخص مكتوم بالاصل**", 
                 )
         except AttributeError:
             pass
         except Exception as e:
-            return await edit_or_reply(event, f"**Error : **`{e}`")
+            return await edit_or_reply(event, f"**خطأ : ****{e}**")
         try:
             await event.client(EditBannedRequest(event.chat_id, user.id, MUTE_RIGHTS))
         except UserAdminInvalidError:
@@ -402,37 +402,37 @@ async def startmute(event):
                 if chat.admin_rights.delete_messages is not True:
                     return await edit_or_reply(
                         event,
-                        "`You can't mute a person if you dont have delete messages permission. ಥ﹏ಥ`",
+                        "**- لايمكنك كتم المستخدم بدون صلاحيات حذف الرسائل**",
                     )
             elif "creator" not in vars(chat):
                 return await edit_or_reply(
-                    event, "`You can't mute a person without admin rights niqq.` ಥ﹏ಥ  "
+                    event, "**- انا لست مشرف هنا** ಥ﹏ಥ  "
                 )
             mute(user.id, event.chat_id)
         except Exception as e:
-            return await edit_or_reply(event, f"**Error : **`{e}`")
+            return await edit_or_reply(event, f"**خطأ : ****{e}**")
         if reason:
             await edit_or_reply(
                 event,
-                f"{_format.mentionuser(user.first_name ,user.id)} `is muted in {get_display_name(await event.get_chat())}`\n"
-                f"`Reason:`{reason}",
+                f"{_format.mentionuser(user.first_name ,user.id)} **تم كتمه بنجاح في {get_display_name(await event.get_chat())}**\n"
+                f"**السبب:**{reason}",
             )
         else:
             await edit_or_reply(
                 event,
-                f"{_format.mentionuser(user.first_name ,user.id)} `is muted in {get_display_name(await event.get_chat())}`\n",
+                f"{_format.mentionuser(user.first_name ,user.id)} **تم كتمه بنجاح في {get_display_name(await event.get_chat())}**\n",
             )
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                "#MUTE\n"
-                f"**User :** [{user.first_name}](tg://user?id={user.id})\n"
-                f"**Chat :** {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
+                "#كتم\n"
+                f"**المستخدم :** [{user.first_name}](tg://user?id={user.id})\n"
+                f"**الدردشه :** {get_display_name(await event.get_chat())}(**{event.chat_id}**)",
             )
 
 
-@catub.cat_cmd(
-    pattern="unmute(?:\s|$)([\s\S]*)",
+@jmthon.ar_cmd(
+    pattern="الغاء كتم(?:\s|$)([\s\S]*)",
     command=("unmute", plugin_category),
     info={
         "header": "To allow user to send messages again",
@@ -445,28 +445,28 @@ async def startmute(event):
     },
 )
 async def endmute(event):
-    "To mute a person in that paticular chat"
+    "- الالغاء كتم شخص في الدردشة "
     if event.is_private:
-        await event.edit("`Unexpected issues or ugly errors may occur!`")
+        await event.edit("**- لقد حدث خطا ما**")
         await sleep(1)
         replied_user = await event.client(GetFullUserRequest(event.chat_id))
         if not is_muted(event.chat_id, event.chat_id):
             return await event.edit(
-                "`__This user is not muted in this chat__\n（ ^_^）o自自o（^_^ ）`"
+                "**- ههذا المستخدم غير مكتوم**"
             )
         try:
             unmute(event.chat_id, event.chat_id)
         except Exception as e:
-            await event.edit(f"**Error **\n`{e}`")
+            await event.edit(f"**خطأ **\n**{e}**")
         else:
             await event.edit(
-                "`Successfully unmuted that person\n乁( ◔ ౪◔)「    ┑(￣Д ￣)┍`"
+                "**- تم الغاء كتم المستخدم بنجاح**"
             )
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                "#PM_UNMUTE\n"
-                f"**User :** [{replied_user.user.first_name}](tg://user?id={event.chat_id})\n",
+                "#الغاء_كتم\n"
+                f"**المستخدم :** [{replied_user.user.first_name}](tg://user?id={event.chat_id})\n",
             )
     else:
         user, _ = await get_user_from_event(event)
@@ -484,25 +484,25 @@ async def endmute(event):
         except AttributeError:
             return await edit_or_reply(
                 event,
-                "`This user can already speak freely in this chat ~~lmfao sed rip~~`",
+                "**- تم الغاء الكتم لهذا المستخدم بنجاح ✓**",
             )
         except Exception as e:
-            return await edit_or_reply(event, f"**Error : **`{e}`")
+            return await edit_or_reply(event, f"**خطا : ****{e}**")
         await edit_or_reply(
             event,
-            f"{_format.mentionuser(user.first_name ,user.id)} `is unmuted in {get_display_name(await event.get_chat())}\n乁( ◔ ౪◔)「    ┑(￣Д ￣)┍`",
+            f"{_format.mentionuser(user.first_name ,user.id)} **تم الغاء كتمه في {get_display_name(await event.get_chat())}**",
         )
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                "#UNMUTE\n"
-                f"**User :** [{user.first_name}](tg://user?id={user.id})\n"
-                f"**Chat :** {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
+                "#الغاء_كتم\n"
+                f"**المستخدم :** [{user.first_name}](tg://user?id={user.id})\n"
+                f"**الدردشه :** {get_display_name(await event.get_chat())}(**{event.chat_id}**)",
             )
 
 
-@catub.cat_cmd(
-    pattern="kick(?:\s|$)([\s\S]*)",
+@jmthon.ar_cmd(
+    pattern="طرد(?:\s|$)([\s\S]*)",
     command=("kick", plugin_category),
     info={
         "header": "To kick a person from the group",
@@ -517,32 +517,32 @@ async def endmute(event):
     require_admin=True,
 )
 async def endmute(event):
-    "use this to kick a user from chat"
+    "- لطرد الشخص من الدردشه"
     user, reason = await get_user_from_event(event)
     if not user:
         return
-    catevent = await edit_or_reply(event, "`Kicking...`")
+    rozevent = await edit_or_reply(event, "**- جاري طرد المستخدم انتظر**")
     try:
         await event.client.kick_participant(event.chat_id, user.id)
     except Exception as e:
-        return await catevent.edit(NO_PERM + f"\n{e}")
+        return await rozevent.edit(NO_PERM + f"\n{e}")
     if reason:
-        await catevent.edit(
-            f"`Kicked` [{user.first_name}](tg://user?id={user.id})`!`\nReason: {reason}"
+        await rozevent.edit(
+            f"**- تم بنجاح طرد ** [{user.first_name}](tg://user?id={user.id})**!**\nالسبب: {reason}"
         )
     else:
-        await catevent.edit(f"`Kicked` [{user.first_name}](tg://user?id={user.id})`!`")
+        await rozevent.edit(f"**- تم بنجاح طرد** [{user.first_name}](tg://user?id={user.id})**!**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
-            "#KICK\n"
-            f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-            f"CHAT: {get_display_name(await event.get_chat())}(`{event.chat_id}`)\n",
+            "#طرد\n"
+            f"المستخدم: [{user.first_name}](tg://user?id={user.id})\n"
+            f"الدردشه: {get_display_name(await event.get_chat())}(**{event.chat_id}**)\n",
         )
 
 
-@catub.cat_cmd(
-    pattern="pin( loud|$)",
+@jmthon.ar_cmd(
+    pattern="تثبيت( بالاشعار|$)",
     command=("pin", plugin_category),
     info={
         "header": "For pining messages in chat",
@@ -556,10 +556,10 @@ async def endmute(event):
     },
 )
 async def pin(event):
-    "To pin a message in chat"
+    "- لتثبيت الرسالة في المجموعة "
     to_pin = event.reply_to_msg_id
     if not to_pin:
-        return await edit_delete(event, "`Reply to a message to pin it.`", 5)
+        return await edit_delete(event, "**- ييجب الرد على الرسالة لتثبيتها**", 5)
     options = event.pattern_match.group(1)
     is_silent = bool(options)
     try:
@@ -567,20 +567,20 @@ async def pin(event):
     except BadRequestError:
         return await edit_delete(event, NO_PERM, 5)
     except Exception as e:
-        return await edit_delete(event, f"`{e}`", 5)
-    await edit_delete(event, "`Pinned Successfully!`", 3)
+        return await edit_delete(event, f"**{e}**", 5)
+    await edit_delete(event, "**- تم تثبيت الرساله بنجاح**", 3)
     if BOTLOG and not event.is_private:
         await event.client.send_message(
             BOTLOG_CHATID,
-            f"#PIN\
-                \n__successfully pinned a message in chat__\
-                \nCHAT: {get_display_name(await event.get_chat())}(`{event.chat_id}`)\
-                \nLOUD: {is_silent}",
+            f"#تثبيت\
+                \n**تم بنجاح تثبيت الرسالة في الدردشه**\
+                \nالدردشة: {get_display_name(await event.get_chat())}(**{event.chat_id}**)\
+                \nالاشعار: {is_silent}",
         )
 
 
-@catub.cat_cmd(
-    pattern="unpin( all|$)",
+@jmthon.ar_cmd(
+    pattern="الغاء تثبيت( الكل|$)",
     command=("unpin", plugin_category),
     info={
         "header": "For unpining messages in chat",
@@ -594,41 +594,41 @@ async def pin(event):
     },
 )
 async def pin(event):
-    "To unpin message(s) in the group"
+    "- لالغاء تثبيت الرساله في المجموعة"
     to_unpin = event.reply_to_msg_id
     options = (event.pattern_match.group(1)).strip()
-    if not to_unpin and options != "all":
+    if not to_unpin and options != "الكل":
         return await edit_delete(
             event,
-            "__Reply to a message to unpin it or use __`.unpin all`__ to unpin all__",
+            "**- يجب الرد على رسالة لإلغاء تثبيتها **",
             5,
         )
     try:
         if to_unpin and not options:
             await event.client.unpin_message(event.chat_id, to_unpin)
-        elif options == "all":
+        elif options == "الكل":
             await event.client.unpin_message(event.chat_id)
         else:
             return await edit_delete(
-                event, "`Reply to a message to unpin it or use .unpin all`", 5
+                event, "**- يجب الرد على رسالة لإلغاء تثبيتها **", 5
             )
     except BadRequestError:
         return await edit_delete(event, NO_PERM, 5)
     except Exception as e:
-        return await edit_delete(event, f"`{e}`", 5)
-    await edit_delete(event, "`Unpinned Successfully!`", 3)
+        return await edit_delete(event, f"**{e}**", 5)
+    await edit_delete(event, "**- تم بنجاح الغاء التثبيت**", 3)
     if BOTLOG and not event.is_private:
         await event.client.send_message(
             BOTLOG_CHATID,
-            f"#UNPIN\
-                \n__successfully unpinned message(s) in chat__\
-                \nCHAT: {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
+            f"#الغاء_تثبيت\
+                \n**تم بنجاح الغاء تثبيت الرسالة**\
+                \nالدردشه: {get_display_name(await event.get_chat())}(**{event.chat_id}**)",
         )
 
 
-@catub.cat_cmd(
-    pattern="undlt( -u)?(?: |$)(\d*)?",
-    command=("undlt", plugin_category),
+@jmthon.ar_cmd(
+    pattern="الاحداث( -u)?(?: |$)(\d*)?",
+    command=("الاحداث", plugin_category),
     info={
         "header": "To get recent deleted messages in group",
         "description": "To check recent deleted messages in group, by default will show 5. you can get 1 to 15 messages.",
@@ -648,8 +648,8 @@ async def pin(event):
     require_admin=True,
 )
 async def _iundlt(event):  # sourcery no-metrics
-    "To check recent deleted messages in group"
-    catevent = await edit_or_reply(event, "`Searching recent actions .....`")
+    "- للتحقق من الرسائل المحذوفة الأخيرة في المجموعة‌‌"
+    rozevent = await edit_or_reply(event, "**- يتم البحث عن الأحداث**")
     flag = event.pattern_match.group(1)
     if event.pattern_match.group(2) != "":
         lim = int(event.pattern_match.group(2))
@@ -662,7 +662,7 @@ async def _iundlt(event):  # sourcery no-metrics
     adminlog = await event.client.get_admin_log(
         event.chat_id, limit=lim, edit=False, delete=True
     )
-    deleted_msg = f"**Recent {lim} Deleted message(s) in this group are :**"
+    deleted_msg = f"**الرسائل المحذوفة {lim} الأخيرة في هذه المجموعة هي‌‌:**"
     if not flag:
         for msg in adminlog:
             ruser = (
@@ -670,12 +670,12 @@ async def _iundlt(event):  # sourcery no-metrics
             ).user
             _media_type = media_type(msg.old)
             if _media_type is None:
-                deleted_msg += f"\n☞ __{msg.old.message}__ **Sent by** {_format.mentionuser(ruser.first_name ,ruser.id)}"
+                deleted_msg += f"\n• **{msg.old.message}** **ارسلت بواسطه** {_format.mentionuser(ruser.first_name ,ruser.id)}"
             else:
-                deleted_msg += f"\n☞ __{_media_type}__ **Sent by** {_format.mentionuser(ruser.first_name ,ruser.id)}"
-        await edit_or_reply(catevent, deleted_msg)
+                deleted_msg += f"\n• **{_media_type}** **ارسلت بواسطه** {_format.mentionuser(ruser.first_name ,ruser.id)}"
+        await edit_or_reply(rozevent, deleted_msg)
     else:
-        main_msg = await edit_or_reply(catevent, deleted_msg)
+        main_msg = await edit_or_reply(rozevent, deleted_msg)
         for msg in adminlog:
             ruser = (
                 await event.client(GetFullUserRequest(msg.old.from_id.user_id))
@@ -683,10 +683,10 @@ async def _iundlt(event):  # sourcery no-metrics
             _media_type = media_type(msg.old)
             if _media_type is None:
                 await main_msg.reply(
-                    f"{msg.old.message}\n**Sent by** {_format.mentionuser(ruser.first_name ,ruser.id)}"
+                    f"{msg.old.message}\n**ارسلت بواسطه** {_format.mentionuser(ruser.first_name ,ruser.id)}"
                 )
             else:
                 await main_msg.reply(
-                    f"{msg.old.message}\n**Sent by** {_format.mentionuser(ruser.first_name ,ruser.id)}",
+                    f"{msg.old.message}\n**ارسلت بواسطه** {_format.mentionuser(ruser.first_name ,ruser.id)}",
                     file=msg.old.media,
                 )
