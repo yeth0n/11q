@@ -189,10 +189,16 @@ async def _(event):  # sourcery no-metrics
             )
             return await edit_delete(event, "**  تم ايقاف البايو الوقـتي بنـجاح ✅**")
         return await edit_delete(event, "**لم يتم تفعيل البايو الوقتي 🧸♥**")
+     if input_str == "كرر":
+        if gvarstatus("spamwork") is not None and gvarstatus("spamwork") == "true":
+            delgvar("spamwork")
+            return await edit_delete(event, "- تم ايقاف التكرار بنجاح")
+        return await edit_delete(event,  "لم يتم تفعيل التكرار اصلا")
     END_CMDS = [
         "الصورة الوقتية",
         "اسم وقتي",
         "بايو وقتي",
+        "كرر",
     ]
     if input_str not in END_CMDS:
         await edit_delete(
