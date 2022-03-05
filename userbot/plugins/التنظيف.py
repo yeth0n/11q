@@ -16,7 +16,7 @@ from telethon.tl.types import (
     InputMessagesFilterVoice,
 )
 
-from userbot import catub
+from userbot import jmthon
 
 from ..core.managers import edit_delete, edit_or_reply
 from ..helpers.utils import reply_id
@@ -42,16 +42,9 @@ purgetype = {
 }
 
 
-@catub.cat_cmd(
-    pattern="del(\s*| \d+)$",
-    command=("del", plugin_category),
-    info={
-        "header": "To delete replied message.",
-        "description": "Deletes the message you replied to in x(count) seconds if count is not used then deletes immediately",
-        "usage": ["{tr}del <time in seconds>", "{tr}del"],
-        "examples": "{tr}del 2",
-    },
-)
+@jmthon.ar_cmd(
+    pattern="مسح(\s*| \d+)$",
+    command=("مسح", plugin_category))
 async def delete_it(event):
     "To delete replied message."
     input_str = event.pattern_match.group(1).strip()
@@ -64,40 +57,34 @@ async def delete_it(event):
                 await msg_src.delete()
                 if BOTLOG:
                     await event.client.send_message(
-                        BOTLOG_CHATID, "#DEL \n`Deletion of message was successful`"
+                        BOTLOG_CHATID, "#المسح \n**تم حذف الرسالة بنجاح ✓**"
                     )
             except rpcbaseerrors.BadRequestError:
                 if BOTLOG:
                     await event.client.send_message(
                         BOTLOG_CHATID,
-                        "`Well, I can't delete a message. I am not an admin`",
+                        "**- يجب ان تكون مشرف لمسح الرسائل هنا**",
                     )
         elif input_str:
-            if not input_str.startswith("var"):
-                await edit_or_reply(event, "`Well the time you mentioned is invalid.`")
+            if not input_str.startswith("فار"):
+                await edit_or_reply(event, "- عذرا يجب الرد بشكل صحيح")
         else:
             try:
                 await msg_src.delete()
                 await event.delete()
                 if BOTLOG:
                     await event.client.send_message(
-                        BOTLOG_CHATID, "#DEL \n`Deletion of message was successful`"
+                        BOTLOG_CHATID, "#المسح \n**تم حذف الرسالة بنجاح ✓**"
                     )
             except rpcbaseerrors.BadRequestError:
-                await edit_or_reply(event, "`Well, I can't delete a message`")
+                await edit_or_reply(event, "**- عذرا لا استطيع حذف الرسائل**")
     elif not input_str:
         await event.delete()
 
 
-@catub.cat_cmd(
-    pattern="purgefrom$",
-    command=("purgefrom", plugin_category),
-    info={
-        "header": "To mark the replied message as starting message of purge list.",
-        "description": "After using this u must use purgeto command also so that the messages in between this will delete.",
-        "usage": "{tr}purgefrom",
-    },
-)
+@jmthon.ar_cmd(
+    pattern="حذف من$",
+    command=("حذف من", plugin_category))
 async def purge_from(event):
     "To mark the message for purging"
     reply = await event.get_reply_message()
@@ -106,21 +93,15 @@ async def purge_from(event):
         purgelist[event.chat_id] = reply_message
         await edit_delete(
             event,
-            "`This Message marked for deletion. Reply to another message with purgeto to delete all messages in between.`",
+            "- تم تحديد هذه الرساله للحذف الان قم بالرد على رساله ثانيه تحتها بأمر  `.حذف الى`  لحذف الرسائل التي بين الرسالتين التي تم تحديدهما",
         )
     else:
-        await edit_delete(event, "`Reply to a message to let me know what to delete.`")
+        await edit_delete(event, "**- يجب عليك الرد على الرسالة اولا**")
 
 
-@catub.cat_cmd(
-    pattern="purgeto$",
-    command=("purgeto", plugin_category),
-    info={
-        "header": "To mark the replied message as end message of purge list.",
-        "description": "U need to use purgefrom command before using this command to function this.",
-        "usage": "{tr}purgeto",
-    },
-)
+@jmthon.ar_cmd(
+    pattern="حذف الى$",
+    command=("حذف الى", plugin_category))
 async def purge_to(event):
     "To mark the message for purging"
     chat = await event.get_input_chat()
@@ -130,12 +111,12 @@ async def purge_to(event):
     except KeyError:
         return await edit_delete(
             event,
-            "`First mark the messsage with purgefrom and then mark purgeto .So, I can delete in between Messages`",
+            "اولا عليك تحديد رسالة بأمر  `.حذف من` بعدها استخدم امر  `.حذف الى` لحذف الرسائل بين الكلمتين التي تم الرد عليهما",
         )
     if not reply or not from_message:
         return await edit_delete(
             event,
-            "`First mark the messsage with purgefrom and then mark purgeto .So, I can delete in between Messages`",
+            "اولا عليك تحديد رسالة بأمر  `.حذف من` بعدها استخدم امر  `.حذف الى` لحذف الرسائل بين الكلمتين التي تم الرد عليهما",
         )
     try:
         to_message = await reply_id(event)
@@ -154,20 +135,20 @@ async def purge_to(event):
             await event.client.delete_messages(chat, msgs)
         await edit_delete(
             event,
-            "`Fast purge complete!\nPurged " + str(count) + " messages.`",
+            "تم التنظيف  بنجاح \nتم حذف " + str(count) + " من الرسائل",
         )
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
-                "#PURGE \n`Purge of " + str(count) + " messages done successfully.`",
+                "#التنظيف \n**حذف " + str(count) + " من الرسائل تم بنجاح**",
             )
     except Exception as e:
-        await edit_delete(event, f"**Error**\n`{e}`")
+        await edit_delete(event, f"**خطأ**\n`{e}`")
 
 
-@catub.cat_cmd(
-    pattern="purgeme",
-    command=("purgeme", plugin_category),
+@jmthon.ar_cmd(
+    pattern="حذف رسائلي",
+    command=("حذف رسائلي", plugin_category),
     info={
         "header": "To purge your latest messages.",
         "description": "Deletes x(count) amount of your latest messages.",
@@ -188,21 +169,21 @@ async def purgeme(event):
 
     smsg = await event.client.send_message(
         event.chat_id,
-        "**Purge complete!**` Purged " + str(count) + " messages.`",
+        "**تم التنظيف بنجاح ✓ \n**تم حذف " + str(count) + " من الرسائل**",
     )
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
-            "#PURGEME \n`Purge of " + str(count) + " messages done successfully.`",
+            "#حذف_رسائلي \n**تم حذف " + str(count) + " من الرسائل بنجاح ✓**",
         )
     await sleep(5)
     await smsg.delete()
 
 
 # TODO: only sticker messages.
-@catub.cat_cmd(
-    pattern="purge(?:\s|$)([\s\S]*)",
-    command=("purge", plugin_category),
+@jmthon.ar_cmd(
+    pattern="تنظيف(?:\s|$)([\s\S]*)",
+    command=("تنظيف", plugin_category),
     info={
         "header": "To purge messages from the replied message.",
         "description": "•  Deletes the x(count) amount of messages from the replied message\
@@ -272,9 +253,9 @@ async def fastpurger(event):  # sourcery no-metrics
                         if msgs:
                             await event.client.delete_messages(chat, msgs)
                     elif ty == "s":
-                        error += "\n• __You can't use s flag along with otherflags.__"
+                        error += "\n• لا يمكنك استخدام اضافه الـ `البحث`  مع بقيه الاضافات" 
                     else:
-                        error += f"\n• `{ty}` __is Invalid flag.__"
+                        error += f"\n• `{ty}` هذه الاضافه غير صحيحه"
             else:
                 count += 1
                 async for msg in event.client.iter_messages(
@@ -295,7 +276,7 @@ async def fastpurger(event):  # sourcery no-metrics
                 try:
                     cont, inputstr = input_str.split(" ")
                 except ValueError:
-                    cont = "error"
+                    cont = "خطأ"
                     inputstr = input_str
                 cont = cont.strip()
                 inputstr = inputstr.strip()
@@ -327,9 +308,9 @@ async def fastpurger(event):  # sourcery no-metrics
                 if msgs:
                     await event.client.delete_messages(chat, msgs)
             else:
-                error += f"\n• `{ty}` __is Invalid flag.__"
+                error += f"\n• `{ty}` هذه الاضافه غير صحيحه"
         elif input_str:
-            error += f"\n• `.purge {input_str}` __is invalid syntax try again by reading__ `.help -c purge`"
+            error += f"\n• `.تنظيف {input_str}` هو استخدام غير صحيح شاهد قائمه الاوامر و استخدم بشكل صحيح"
         elif p_type is not None:
             for ty in p_type:
                 if ty in purgetype:
@@ -346,7 +327,7 @@ async def fastpurger(event):  # sourcery no-metrics
                     if msgs:
                         await event.client.delete_messages(chat, msgs)
                 else:
-                    error += f"\n• `{ty}` __is Invalid flag.__"
+                    error += f"\n• `{ty}` هذه الاضافه غير صحيحه"
         else:
             async for msg in event.client.iter_messages(
                 chat, min_id=event.reply_to_msg_id - 1
@@ -373,15 +354,15 @@ async def fastpurger(event):  # sourcery no-metrics
                     if msgs:
                         await event.client.delete_messages(chat, msgs)
                 elif ty == "s":
-                    error += "\n• __You can't use s with other flags or you haven't given search query.__"
+                    error += "\n• لا يمكنك استخدام اضافه الـ `البحث`  مع بقيه الاضافات" 
 
                 else:
-                    error += f"\n• `{ty}` __is Invalid flag.__"
+                    error += f"\n• `{ty}` هذه الاضافه غير صحيحه"
         elif p_type == "s":
             try:
                 cont, inputstr = input_str.split(" ")
             except ValueError:
-                cont = "error"
+                cont = "خطأ"
                 inputstr = input_str
             cont = cont.strip()
             inputstr = inputstr.strip()
@@ -406,7 +387,7 @@ async def fastpurger(event):  # sourcery no-metrics
             if msgs:
                 await event.client.delete_messages(chat, msgs)
         else:
-            error += f"\n• `{ty}` __is Invalid flag.__"
+            error += f"\n• `{ty}` هذه الاضافه غير صحيحه"
     elif p_type is not None:
         for ty in p_type:
             if ty in purgetype:
@@ -421,10 +402,10 @@ async def fastpurger(event):  # sourcery no-metrics
                 if msgs:
                     await event.client.delete_messages(chat, msgs)
             elif ty == "s":
-                error += "\n• __You can't use s with other flags or you haven't given search query.__"
+                error += "\n• لا يمكنك استخدام اضافه الـ `البحث`  مع بقيه الاضافات" 
 
             else:
-                error += f"\n• `{ty}` __is Invalid flag.__"
+                error += f"\n• `{ty}`هذه الاضافه غير صحيحه"
     elif input_str.isnumeric():
         async for msg in event.client.iter_messages(chat, limit=int(input_str) + 1):
             count += 1
@@ -435,145 +416,20 @@ async def fastpurger(event):  # sourcery no-metrics
         if msgs:
             await event.client.delete_messages(chat, msgs)
     else:
-        error += "\n•  __Nothing is specified Recheck the help__ (`.help -c purge`)"
+        error += "\n•  لم يتم تحديد اضافه يرجى استخدام الامر بشكل صحيح"
     if msgs:
         await event.client.delete_messages(chat, msgs)
     if count > 0:
-        result += "__Fast purge complete!\nPurged __`" + str(count) + "` __messages.__"
+        result += "**تم التنظيف بنجاح** \n**تم مسح**" + str(count) + "  ** من الرسائل**"
     if error != "":
-        result += f"\n\n**Error:**{error}"
+        result += f"\n\n**خطأ:**{error}"
     if result == "":
-        result += "__There are no messages to purge.__"
+        result += "- لا توجد رسائل لتنظيفها "
     hi = await event.client.send_message(event.chat_id, result)
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
             f"#PURGE \n{result}",
-        )
-    await sleep(5)
-    await hi.delete()
-
-
-@catub.cat_cmd(
-    pattern="upurge( -a)?(?:\s|$)([\s\S]*)",
-    command=("upurge", plugin_category),
-    info={
-        "header": "To purge messages from the replied message of replied user.",
-        "description": "•  Deletes the x(count) amount of messages from the replied message of replied user\
-        \n•  If you don't use count then deletes all messages from the replied messages of replied user\
-        \n•  Use -a flag to delete all his messages or mention x to delete x recent messages of his\
-        \n•  Use -s flag to delete all his messages which contatins given word.\
-        \n•  You cann't use both flags at a time\
-        ",
-        "flags": {
-            "a": "To delete all messages of replied user.",
-            "s": "To delete all messages of replied user with the given query.",
-        },
-        "usage": [
-            "{tr}upurge <count> <reply>",
-            "{tr}upurge -a <count(optional)> <reply>",
-            "{tr}upurge -s <query> <reply>",
-        ],
-        "examples": [
-            "{tr}upurge 10",
-            "{tr}upurge -s fuck",
-            "{tr}upurge -a",
-        ],
-    },
-)
-async def fast_purger(event):  # sourcery no-metrics
-    "To purge messages from the replied message of replied user."
-    chat = await event.get_input_chat()
-    msgs = []
-    count = 0
-    flag = event.pattern_match.group(1)
-    input_str = event.pattern_match.group(2)
-    ptype = re.findall(r"-\w+", input_str)
-    try:
-        p_type = ptype[0].replace("-", "")
-        input_str = input_str.replace(ptype[0], "").strip()
-    except IndexError:
-        p_type = None
-    error = ""
-    result = ""
-    await event.delete()
-    reply = await event.get_reply_message()
-    if not reply or reply.sender_id is None:
-        return await edit_delete(
-            event, "**Error**\n__This cmd Works only if you reply to user message.__"
-        )
-    if not flag:
-        if input_str and p_type == "s":
-            async for msg in event.client.iter_messages(
-                event.chat_id,
-                search=input_str,
-                from_user=reply.sender_id,
-            ):
-                count += 1
-                msgs.append(msg)
-                if len(msgs) == 50:
-                    await event.client.delete_messages(chat, msgs)
-                    msgs = []
-        elif input_str and input_str.isnumeric():
-            async for msg in event.client.iter_messages(
-                event.chat_id,
-                limit=int(input_str),
-                offset_id=reply.id - 1,
-                reverse=True,
-                from_user=reply.sender_id,
-            ):
-                msgs.append(msg)
-                count += 1
-                if len(msgs) == 50:
-                    await event.client.delete_messages(chat, msgs)
-                    msgs = []
-        elif input_str:
-            error += f"\n• `.upurge {input_str}` __is invalid syntax try again by reading__ `.help -c purge`"
-        else:
-            async for msg in event.client.iter_messages(
-                chat,
-                min_id=event.reply_to_msg_id - 1,
-                from_user=reply.sender_id,
-            ):
-                count += 1
-                msgs.append(msg)
-                if len(msgs) == 50:
-                    await event.client.delete_messages(chat, msgs)
-                    msgs = []
-    elif input_str.isnumeric():
-        async for msg in event.client.iter_messages(
-            chat,
-            limit=int(input_str),
-            from_user=reply.sender_id,
-        ):
-            count += 1
-            msgs.append(msg)
-            if len(msgs) == 50:
-                await event.client.delete_messages(chat, msgs)
-                msgs = []
-    else:
-        async for msg in event.client.iter_messages(
-            chat,
-            from_user=reply.sender_id,
-        ):
-            count += 1
-            msgs.append(msg)
-            if len(msgs) == 50:
-                await event.client.delete_messages(chat, msgs)
-                msgs = []
-    if msgs:
-        await event.client.delete_messages(chat, msgs)
-    if count > 0:
-        result += "__Fast purge completed!\nPurged __`" + str(count) + "` __messages.__"
-    if error != "":
-        result += f"\n\n**Error:**{error}"
-    if result == "":
-        result += "__There are no messages to purge.__"
-    hi = await event.client.send_message(event.chat_id, result)
-    if BOTLOG:
-        await event.client.send_message(
-            BOTLOG_CHATID,
-            f"#UPURGE \n{result}",
         )
     await sleep(5)
     await hi.delete()
