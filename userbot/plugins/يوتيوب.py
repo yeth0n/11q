@@ -323,7 +323,7 @@ async def yt_search(event):
 
 
 @jmthon.ar_cmd(
-    pattern="انستا ([\s\S]*)",
+    pattern="انستا (.*)",
     command=("انستا", plugin_category),
     info={
         "header": "يمكنك تحميل فيديو أو صورة عبر منصة الانستقرام",
@@ -334,14 +334,14 @@ async def yt_search(event):
     },
 )
 async def kakashi(event):
-    "لتحميل الصور و الفيديوهات من الانستجرام"
+    "For downloading instagram media"
     chat = "@instasavegrambot"
     link = event.pattern_match.group(1)
     if "www.instagram.com" not in link:
         await edit_or_reply(event, "⌯︙- يجب كتابة رابط من الانستغرام لتحميله ❕")
     else:
         start = datetime.now()
-        jmthonevent = await edit_or_reply(event,"⌯︙جار التحميل انتظر قليلا 🔍")
+        catevent = await edit_or_reply(event, "⌯︙جار التحميل انتظر قليلا 🔍")
     async with event.client.conversation(chat) as conv:
         try:
             msg_start = await conv.send_message("/start")
@@ -351,21 +351,22 @@ async def kakashi(event):
             details = await conv.get_response()
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await jmthonevent.edit(" ⌯︙قـم بفتح الحظر ع بوت @instasavegrambot")
+            await catevent.edit(" ⌯︙قـم بفتح الحظر ع بوت @instasavegrambot")
             return
-        await jmthonevent.delete()
-        jmthon = await event.client.send_file(
+        await catevent.delete()
+        cat = await event.client.send_file(
             event.chat_id,
             video,
         )
         end = datetime.now()
-        ms = (end - start).seconds
-        await jmthon.edit(
-            f"<b><i>➥ تم الرفع في {ms} ثواني.</i></b>\n<b><i>➥ طلب الرفع:- {hmention}</i></b>",
+        (end - start).seconds
+        await cat.edit(
+            f"꙳ ¦ تم تنزيل بواسطة  : @JMTHON ",
             parse_mode="html",
         )
     await event.client.delete_messages(
         conv.chat_id, [msg_start.id, response.id, msg.id, video.id, details.id]
     )
+
 
 #translate for Arabic by @RR9R7
