@@ -1,7 +1,6 @@
 # اذا تخمط اذكر الحقوق رجـاءا  -
 # كتابة وتعديل وترتيب  ~ @RR9R7
-# For ~ @Jmthon
-
+# batmanpfp and thorpfp by @Nihinivi
 import asyncio
 import base64
 import os
@@ -18,7 +17,7 @@ from ..Config import Config
 from ..helpers.utils import _format
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 from . import AUTONAME, DEFAULT_BIO, edit_delete, jmthon, logging
-
+from . import *
 plugin_category = "tools"
 
 DEFAULTUSERBIO = DEFAULT_BIO or " قلوبنا مليئة برسائل ، لم تكتب "

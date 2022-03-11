@@ -1,12 +1,12 @@
 import asyncio
 from collections import deque
 
-from . import edit_delete, edit_or_reply, jmthon, mention
+from . import edit_delete, edit_or_reply, catub, mention
 
 plugin_category = "fun"
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="نجمه$",
     command=("نجمه", plugin_category),
     info={
@@ -24,7 +24,7 @@ async def _(event):
         deq.rotate(1)
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="مكعبات$",
     command=("مكعبات", plugin_category),
     info={
@@ -42,7 +42,7 @@ async def _(event):
         deq.rotate(1)
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="مطر$",
     command=("مطر", plugin_category),
     info={
@@ -60,7 +60,7 @@ async def _(event):
         deq.rotate(1)
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="deploy$",
     command=("deploy", plugin_category),
     info={
@@ -92,7 +92,7 @@ async def _(event):
         await event.edit(animation_chars[i % 12])
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="تفريغ(?: |$)(.*)",
     command=("تفريغ", plugin_category),
     info={
@@ -138,7 +138,7 @@ async def _(event):
             await event.edit(something_else)
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="فليم$",
     command=("فليم", plugin_category),
     info={
@@ -170,7 +170,7 @@ async def _(event):
 
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="طائره$",
     command=("طائره", plugin_category),
     info={
@@ -198,7 +198,7 @@ async def _(event):
     await asyncio.sleep(3)
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="شرطه$",
     command=("شرطه", plugin_category),
     info={
@@ -230,7 +230,7 @@ async def _(event):
         await event.edit(animation_chars[i % 12])
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="jio$",
     command=("jio", plugin_category),
     info={
@@ -269,7 +269,7 @@ async def _(event):
         await event.edit(animation_chars[i % 19])
 
 
-@jmthon.ar_cmd(
+@catub.cat_cmd(
     pattern="النضام الشمسي$",
     command=("النضام الشمسي", plugin_category),
     info={
