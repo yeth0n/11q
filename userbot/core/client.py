@@ -179,7 +179,7 @@ class JmthonUserBotClient(TelegramClient):
                         pastelink = await paste_message(
                             ftext, pastetype="s", markdown=False
                         )
-                        text = "**تقرير خطأ جمثون*\n\n"
+                        text = "**تقرير خطأ جمثون**\n\n"
                         link = "[هنا](https://t.me/jmthon_support)"
                         text += "يمكنك التبليغ عن هذه المشكله"
                         text += f"- فقط قم بتوجيه الرساله هنا {link}.\n"
@@ -296,7 +296,7 @@ class JmthonUserBotClient(TelegramClient):
                         pastelink = await paste_message(
                             ftext, pastetype="s", markdown=False
                         )
-                        text = "**تقرير خطأ جمثوم**\n\n"
+                        text = "**تقرير خطأ جمثون**\n\n"
                         link = "[هنا](https://t.me/jmthon_support)"
                         text += "يمكنك التبليغ عن هذه المشكله"
                         text += f"- فقط قم بتوجيه الرساله هنا {link}.\n"
