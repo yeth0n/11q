@@ -164,7 +164,7 @@ async def autojo():
             except BaseException:
                 pass
             try:
-                await jmthon(JoinChannelRequest("@RR7PP"))
+                await jmthon(JoinChannelRequest("@jmthon"))
             except BaseException:
                 pass
     except BaseException:
@@ -173,16 +173,16 @@ async def autojo():
 
 async def autozs():
     try:
-        await jmthon(JoinChannelRequest("@RR7PP"))
+        await jmthon(JoinChannelRequest("@RRRMB"))
         if gvar("AUTOZS") is False:
             return
         else:
             try:
-                await jmthon(JoinChannelRequest("@JMTHON"))
+                await jmthon(JoinChannelRequest("@RRRMB"))
             except BaseException:
                 pass
             try:
-                await jmthon(JoinChannelRequest("@RR7PP"))
+                await jmthon(JoinChannelRequest("@RRRMB"))
             except BaseException:
                 pass
     except BaseException:
