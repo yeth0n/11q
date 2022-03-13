@@ -93,9 +93,9 @@ async def _(event):
             BOTLOG_CHATID,
             "لقد وضعت السورس في وضع السكون لمدة " + str(counter) + " ثواني",
         )
-    event = await edit_or_reply(event, f"**ok, let me sleep for {counter} seconds**")
+    event = await edit_or_reply(event, f"**حسنا تم ايقاف البوت لمده {counter} ثواني**")
     sleep(counter)
-    await event.edit("**OK, I'm awake now.**")
+    await event.edit("**اهلا الان اشتغل بشكل طبيعي**")
 
 
 @jmthon.ar_cmd(
