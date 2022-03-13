@@ -159,7 +159,7 @@ async def users(event):
 @tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"jm_hhack")))
 async def users(event):
     await event.delete()
-    rorza = "هذه الميزه مدفوعه يرجى مراسله المطور لتفعيلها لك @RR9R7"
+    rorza = "الان ارسل  /rz"
     await tgbot.send_message(event.chat_id, rorza)
 
 @jmthon.bot_cmd(incoming=True, func=lambda e: e.is_private)
