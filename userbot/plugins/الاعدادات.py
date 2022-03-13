@@ -33,7 +33,7 @@ async def _(event):
         await event.client.send_message(BOTLOG_CHATID, "#اعادة_التشغيل \n" "تم اعادة تشغيل البوت")
     sandy = await edit_or_reply(
         event,
-        "تمت اعادة التشغيل بنجاح ✓\n**ارسل** `.فحص` ** او ** `.الاوامر` ** للتحقق مما إذ كان البوت شغال ، يستغرق الأمر في الواقع 1-2 دقيقة لإعادة التشغيل**",
+        "تمت اعادة التشغيل بنجاح ✓\n**ارسل** `.فحص` ** او ** `.اوامري` ** للتحقق مما إذ كان البوت شغال ، يستغرق الأمر في الواقع 1-2 دقيقة لإعادة التشغيل**",
     )
     try:
         ulist = get_collectionlist_items()
@@ -55,7 +55,7 @@ async def _(event):
 
 
 @jmthon.ar_cmd(
-    pattern="ايقاف السورس$",
+    pattern="أيقاف السورس$",
     command=("ايقاف السورس", plugin_category),
     info={
         "header": "ايقاف تشغيل السورس !!",
@@ -75,7 +75,7 @@ async def _(event):
 
 
 @jmthon.ar_cmd(
-    pattern="ايقاف مؤقت( [0-9]+)?$",
+    pattern="أيقاف مؤقت( [0-9]+)?$",
     command=("ايقاف مؤقت", plugin_category),
     info={
         "header": "سوف يتوقف السورس عن العمل في الوقت المذكور.",
